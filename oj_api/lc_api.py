@@ -4,7 +4,7 @@ class LC(Contest):
     def __init__(self):
         self.HOST = "https://leetcode-cn.com/"
         self.PATH = {
-            "contest":"graphql"
+            "contestList":"graphql"
         }
         self.HEADER ={
             "accept": "*/*",
@@ -22,7 +22,7 @@ class LC(Contest):
         super().__init__()
 
     async def get_contest(self):
-        url_data = self.HOST + self.PATH["contest"]
+        url_data = self.HOST + self.PATH["contestList"]
         payload = {
             "operationName": "null",
             "query": "{\n  contestUpcomingContests {\n    containsPremium\n    title\n    cardImg\n    titleSlug\n    description\n    startTime\n    duration\n    originStartTime\n    isVirtual\n    isLightCardFontColor\n    company {\n      watermark\n      __typename\n    }\n    __typename\n  }\n}\n",

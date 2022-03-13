@@ -1,16 +1,21 @@
 from oj_api.global_pk import *
-
+# from global_pk import *
 
 class ATC(Contest):
     def __init__(self):
+        self.HOST = "https://atcoder.jp/"
+        self.PATH = {
+            "userRating": "users/",
+            "contestList": "contests/"
+        }
         super().__init__()
 
     async def get_contest(self):
         try:
-            url = "https://atcoder.jp/contests/"
+            url = self.HOST + self.PATH["contestList"]
 
             # 获取网页到本地
-            html = await get_html(url)
+            html = httpx.get(url).text
             # await(text_save('./atc_contest.html', html))
 
             # 转化为能处理的对象
@@ -56,10 +61,10 @@ class ATC(Contest):
             return -1, 0, 0
 
     async def get_rating(self, name):  # 返回一个列表，如果不存在用户则是空列表
-        url = "https://atcoder.jp/users/" + name
+        url = self.HOST + self.PATH["userRating"] + name
 
         # 获取网页
-        html = await get_html(url)
+        html = httpx.get(url).text
 
         # 转化为能处理的对象
         # h5 = etree.parse("./atc_usr.html", etree.HTMLParser())
@@ -86,6 +91,6 @@ class ATC(Contest):
 if __name__ == '__main__':
     # asyncio.run(get_contest_lately())
     atc = ATC()
-    print((atc.info))
+    logger.success((atc.info))
     # print(asyncio.run(get_usr_rank("432423")))
     pass

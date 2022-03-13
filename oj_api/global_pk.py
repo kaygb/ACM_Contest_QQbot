@@ -3,6 +3,7 @@ import pprint
 import time
 import asyncio
 import oj_api.Contest
+#from Contest import *
 import abc
 import asyncio
 import time
