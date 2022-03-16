@@ -16,6 +16,7 @@
 * 查询力扣的比赛
 * 查询牛客比赛
 * 查询当日所有比赛信息
+* 通知当日所有比赛信息，并可自助添加想要通知的对象（删除还没想好，可能得用数据库）
 * 查询下一场比赛信息
 * 随机qcjj->随机发送清楚姐姐图片
 * CF上下号提醒
@@ -69,6 +70,7 @@ pip3 install yiri-mirai-trigger
 pip3 install requests
 pip3 install lxml
 pip3 install apscheduler
+pip3 install loguru
 # 应该是全了qwq，如果不全请根据报错来安装相应的包，如果方便请您告知我，我将更新安装命令
 ~~~
 

@@ -6,6 +6,9 @@ import asyncio
 import random
 import httpx
 import datetime
+
+import mirai
+
 from log import Log
 from other_operation import random_qcjj
 from oj_api import cf_api, atc_api, lc_api, nc_api, Contest
@@ -33,6 +36,24 @@ print(cf.info)
 print(atc.info)
 print(nc.info)
 print(lc.info)
+
+# 读取本地保存的要通知的人和群号，没有自动创建
+if not os.path.exists('friend.txt'):
+    f = open('friend.txt', 'w')
+    f.write('')
+    f.close()
+
+if not os.path.exists('group.txt'):
+    f = open('group.txt', 'w')
+    f.write('')
+    f.close()
+
+f = open('friend.txt', 'r')
+FRIENDS = set(map(lambda x: x.strip(), f.readlines()))
+f.close()
+f = open('group.txt', 'r')
+GROUPS = set(map(lambda x: x.strip(), f.readlines()))
+f.close()
 
 
 async def query_now_weather(city: str) -> str:
@@ -161,7 +182,9 @@ if __name__ == '__main__':
                 "\ntoday -> 查询今天比赛" \
                 "\nnext -> 查询下一场比赛"\
                 "\n来只清楚 -> 随机qcjj"\
-                "\nsetu/涩图 -> 涩图"\
+                "\nsetu/涩图 -> 涩图" \
+                "\n添加通知 -> 每天早上会为你发送当日比赛信息哦qwq" \
+                "\n删除通知 -> 就是不再提醒你了"\
                 "\nbug联系 -> 1095490883" \
                 "\n项目地址 -> 获取项目地址"
 
@@ -236,16 +259,27 @@ if __name__ == '__main__':
             await bot.send(event, await cf.get_random_contest())
 
 
-    @scheduler.scheduled_job(CronTrigger(month=time.localtime(cf.begin_time - 10 * 60).tm_mon,
-                                         day=time.localtime(cf.begin_time - 10 * 60).tm_mday,
-                                         hour=time.localtime(cf.begin_time - 10 * 60).tm_hour,
-                                         minute=time.localtime(cf.begin_time - 10 * 60).tm_min,
+    @scheduler.scheduled_job(CronTrigger(month=time.localtime(cf.begin_time - 15 * 60).tm_mon,
+                                         day=time.localtime(cf.begin_time - 15 * 60).tm_mday,
+                                         hour=time.localtime(cf.begin_time - 15 * 60).tm_hour,
+                                         minute=time.localtime(cf.begin_time - 15 * 60).tm_min,
                                          timezone='Asia/Shanghai'))
     async def cf_shang_hao():
         message_chain = MessageChain([
             await Image.from_local('pic/up_cf.jpg')
         ])
-        await bot.send_group_message(763537993, message_chain)  # 874149706测试号
+        for friend in FRIENDS:
+            try:
+                await bot.send_friend_message(friend, message_chain)  # 发送个人
+            except:
+                print("不存在qq号为 {} 的好友".format(friend))
+
+        for group in GROUPS:
+            try:
+                await bot.send_group_message(group, message_chain)  # 发送群组
+            except:
+                print("不存在群号为 {} 的群组".format(group))
+        # await bot.send_group_message(763537993, message_chain)  # 874149706测试号
 
 
     @scheduler.scheduled_job(
@@ -258,7 +292,18 @@ if __name__ == '__main__':
         message_chain = MessageChain([
             await Image.from_local('pic/down_cf.jpg')
         ])
-        await bot.send_group_message(763537993, message_chain)  # 874149706测试号
+        for friend in FRIENDS:
+            try:
+                await bot.send_friend_message(friend, message_chain)  # 发送个人
+            except:
+                print("不存在qq号为 {} 的好友".format(friend))
+
+        for group in GROUPS:
+            try:
+                await bot.send_group_message(group, message_chain)  # 发送群组
+            except:
+                print("不存在群号为 {} 的群组".format(group))
+        # await bot.send_group_message(763537993, message_chain)  # 874149706测试号
 
         global cf  # 比完接着更新
         await cf.update_contest()
@@ -405,8 +450,8 @@ if __name__ == '__main__':
         # 从消息链中取出文本
         msg = "".join(map(str, event.message_chain[Plain]))
         # 匹配指令
-        m = re.match(r'来只清楚', msg.strip())
-        if m:
+        # m = re.match(r'来只清楚', msg.strip())
+        if msg == '来只清楚':
             print("来只清楚")
             img_list = os.listdir('./pic/qcjj/')
             img_local = './pic/qcjj/' + random.choice(img_list)
@@ -460,10 +505,10 @@ if __name__ == '__main__':
         # 从消息链中取出文本
         msg = "".join(map(str, event.message_chain[Plain]))
         # 匹配指令
-        m = re.match(r'setu', msg.strip())
-        if m is None:
-            m = re.match(r'涩图', msg.strip())
-        if m:
+        # m = re.match(r'setu', msg.strip())
+        # if m is None:
+            # m = re.match(r'涩图', msg.strip())
+        if msg.strip() == 'setu' or msg.strip() == '涩图':
             print("setu")
             img_list = os.listdir('./pic/setu/')
             img_local = './pic/setu/' + random.choice(img_list)
@@ -480,11 +525,28 @@ if __name__ == '__main__':
         # 从消息链中取出文本
         msg = "".join(map(str, event.message_chain[Plain]))
         # 匹配指令
-        m = re.match(r'色图', msg.strip())
-        if m:
+        # m = re.match(r'色图', msg.strip())
+        if msg.strip() == '色图':
             print("色图")
             message_chain = MessageChain([
                 await Image.from_local('./pic/color.jpg')
+            ])
+            await bot.send(event, message_chain)
+
+
+    @bot.on(MessageEvent)
+    async def yxc_query(event: MessageEvent):
+        # 从消息链中取出文本
+        msg = "".join(map(str, event.message_chain[Plain]))
+        # 匹配指令
+        # m = re.match(r'管哥哥', msg.strip())
+        if msg.strip().lower() == '来只yxc':
+            print("yxc")
+            img_list = os.listdir('./pic/yxc/')
+            img_local = './pic/yxc/' + random.choice(img_list)
+            print(img_local)
+            message_chain = MessageChain([
+                await Image.from_local(img_local)
             ])
             await bot.send(event, message_chain)
 
@@ -494,9 +556,9 @@ if __name__ == '__main__':
         # 从消息链中取出文本
         msg = "".join(map(str, event.message_chain[Plain]))
         # 匹配指令
-        m = re.match(r'管哥哥', msg.strip())
-        if m:
-            print("setu")
+        # m = re.match(r'管哥哥', msg.strip())
+        if msg.strip() == '管哥哥':
+            print("ggg")
             img_list = os.listdir('./pic/ggg/')
             img_local = './pic/ggg/' + random.choice(img_list)
             print(img_local)
@@ -546,23 +608,66 @@ if __name__ == '__main__':
                 await bot.send(event, '最近没有比赛哦~')
 
 
-    @scheduler.scheduled_job(CronTrigger(hour=8, minute=30), timezone='Asia/Shanghai')
+    @bot.on(MessageEvent)
+    async def add_notify(event: MessageEvent):  # 添加通知列表
+        msg = "".join(map(str, event.message_chain[Plain]))
+
+        if msg.strip() == '添加通知':
+            try:
+                if isinstance(event, GroupMessage):
+                    group_id = event.sender.group.id
+                    global GROUPS
+
+                    if group_id not in GROUPS:
+                        f = open('group.txt', 'a')
+                        f.write("{}\n".format(group_id))
+                        GROUPS.add(int(group_id))
+                        f.close()
+                        print("添加群通知：{}".format(group_id))
+                        await bot.send(event, '添加成功~')
+                    else:
+                        await bot.send(event, '已经添加过啦~')
+                else:
+                    qq_id = event.sender.id
+                    global FRIENDS
+                    if qq_id not in FRIENDS:
+                        f = open('friend.txt', 'a')
+                        f.write("{}\n".format(qq_id))
+                        FRIENDS.add(int(qq_id))
+                        f.close()
+                        print("添加个人通知：{}".format(qq_id))
+                        await bot.send(event, '添加成功~')
+                    else:
+                        await bot.send(event, '已经添加过啦~')
+            except:
+                await bot.send(event, '添加失败')
+
+
+    @bot.on(MessageEvent)
+    async def del_notify(event: MessageEvent):  # 删除通知列表
+        msg = "".join(map(str, event.message_chain[Plain]))
+
+        if msg.strip() == '删除通知':
+            await bot.send(event, '删除通知还没想好怎么写qwq，请联系管理员删除哦~ qq：1095490883')
+
+
+    @scheduler.scheduled_job(CronTrigger(hour=7, minute=30), timezone='Asia/Shanghai')
     async def notify_contest_info():
         res = await query_today_contest()
 
-        friends = ['1095490883', '942845546', '2442530380']
-        groups = ['687601411', '763537993']
+        # friends = ['1095490883', '942845546', '2442530380', '601621184']
+        # groups = ['687601411', '763537993']
 
         if res != '':
             # 发送当日信息
             msg = "今日的比赛有：\n\n" + res.strip()
-            for friend in friends:
+            for friend in FRIENDS:
                 try:
                     await bot.send_friend_message(friend, msg)  # 发送个人
                 except:
                     print("不存在qq号为 {} 的好友".format(friend))
 
-            for group in groups:
+            for group in GROUPS:
                 try:
                     await bot.send_group_message(group, msg)  # 发送群组
                 except:

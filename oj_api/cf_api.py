@@ -104,7 +104,7 @@ class CF(Contest):
         if json_data['status'] == "OK":
             contest_list_all = list(json_data['result'])
             for contest in contest_list_all:
-                if contest['relativeTimeSeconds'] > 0 and time.localtime(contest['startTimeSeconds']).tm_year >= time.localtime(time.time()).tm_year - 2:
+                if contest['relativeTimeSeconds'] > 0 and contest['startTimeSeconds'] >= int(time.time()) - 2 * 365 * 24 * 3600:  # 两年的时间戳
                     if contest['type'] == 'CF' and 'Codeforces ' in contest['name']:
                         self.contest_finshed_list.append(contest)
 
