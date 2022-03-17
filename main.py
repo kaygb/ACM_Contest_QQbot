@@ -262,11 +262,11 @@ if __name__ == '__main__':
 
     @bot.on(MessageEvent)
     async def get_daily_random_cf_contest(event: MessageEvent, _hack = [None, None]):
-        msg = "".join(map(str, event.message_chain[Plain]))
+        msg = "".join(map(str, event.message_chain[Plain])).strip().lower()
 
-        if msg.strip().lower() == "今日随机cf":
+        if msg == "今日随机cf" || msg == "更新今日随机cf":
             print("今日随机cf")
-            if not _hack[0] or _hack[0] != datetime.date.today():
+            if not _hack[0] or _hack[0] != datetime.date.today() or msg == "更新今日随机cf":
                 _hack[0] = datetime.date.today()
                 global cf
                 _hack[1] = await cf.get_random_contest()
