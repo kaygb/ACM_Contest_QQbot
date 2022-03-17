@@ -176,6 +176,7 @@ if __name__ == '__main__':
                 "\n查询cf分数 id -> 查询对应id的 cf 分数"\
                 "\ncf -> 近场 cf 比赛" \
                 "\n随机cf -> 随机cf round"\
+                "\n今日随机cf -> 每天的随机cf round"\
                 "\natc -> 最新的AtCoder比赛"\
                 "\n牛客 -> 最新的牛客比赛"\
                 "\nlc -> 最新的力扣比赛"\
@@ -257,6 +258,19 @@ if __name__ == '__main__':
             global cf
             print("随机cf")
             await bot.send(event, await cf.get_random_contest())
+
+
+    @bot.on(MessageEvent)
+    async def get_daily_random_cf_contest(event: MessageEvent, _hack = [None, None]):
+        msg = "".join(map(str, event.message_chain[Plain])).strip().lower()
+
+        if msg == "今日随机cf" || msg == "更新今日随机cf":
+            print("今日随机cf")
+            if not _hack[0] or _hack[0] != datetime.date.today() or msg == "更新今日随机cf":
+                _hack[0] = datetime.date.today()
+                global cf
+                _hack[1] = await cf.get_random_contest()
+            await bot.send(event, _hack[1])
 
 
     @scheduler.scheduled_job(CronTrigger(month=time.localtime(cf.begin_time - 15 * 60).tm_mon,
