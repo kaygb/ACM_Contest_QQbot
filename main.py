@@ -6,9 +6,7 @@ import asyncio
 import random
 import httpx
 import datetime
-
 import mirai
-
 from log import Log
 from other_operation import random_qcjj
 from oj_api import cf_api, atc_api, lc_api, nc_api, Contest
@@ -264,7 +262,7 @@ if __name__ == '__main__':
     async def get_daily_random_cf_contest(event: MessageEvent, _hack = [None, None]):
         msg = "".join(map(str, event.message_chain[Plain])).strip().lower()
 
-        if msg == "今日随机cf" || msg == "更新今日随机cf":
+        if msg == "今日随机cf" or msg == "更新今日随机cf":
             print("今日随机cf")
             if not _hack[0] or _hack[0] != datetime.date.today() or msg == "更新今日随机cf":
                 _hack[0] = datetime.date.today()

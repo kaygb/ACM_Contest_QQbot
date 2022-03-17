@@ -1,6 +1,7 @@
 感谢大佬：
 * [guke1024](https://github.com/guke1024)帮我一起完善这个项目qwq
 * [CodeCat](https://github.com/CodeCat-maker)帮我一起完善这个项目qwq
+* [neal](https://github.com/neal2018)帮我一起完善这个项目qwq
 
 ### 项目介绍
 本项目是一个在群里可以通知打cf的机器人项目，以及通知或者查询其他比赛的通知机器人，如果您觉得项目写的不错可以点一下右上角的✨`Star`，谢谢啦
