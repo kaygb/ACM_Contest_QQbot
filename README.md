@@ -55,12 +55,12 @@ git clone git@github.com:INGg/ACM_Contest_QQbot.git
 3. 修改`main.py`中bot的qq号为你自己的qq号
 ~~~python
 bot = Mirai(
-        qq=*****,  # 改成你的机器人的 QQ 号
-        adapter=WebSocketAdapter(
-            verify_key='yirimirai', host='localhost', port=8080
-        )
+    qq=*****,  # 改成你的机器人的 QQ 号
+    adapter=WebSocketAdapter(
+        verify_key='yirimirai', host='localhost', port=8080
     )
-    hdc = HandlerControl(bot)  # 事件接收器
+)
+hdc = HandlerControl(bot)  # 事件接收器
 ~~~
 4. 安装对应的库
 ~~~shell
@@ -80,6 +80,3 @@ pip3 install loguru
 python3 main.py
 # 或 python main.py
 ~~~
-
-***
-注：在`main.py`中，函数`async def notify_contest_info():`中的qq号请改成你想要通知的个人或群组
