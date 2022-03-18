@@ -421,7 +421,8 @@ if __name__ == '__main__':
         message_chain = MessageChain([
             await Image.from_local('pic/up_nc.png')
         ])
-        await bot.send_group_message(763537993, message_chain)  # 874149706测试号
+        for group in GROUPS:
+            await bot.send_group_message(group, message_chain)  # 874149706测试号
 
 
     # 力扣
