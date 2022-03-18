@@ -584,7 +584,7 @@ if __name__ == '__main__':
 
 
     # daily
-    @scheduler.scheduled_job('interval', hour=2.5, timezone='Asia/Shanghai')
+    @scheduler.scheduled_job('interval', hours=2, timezone='Asia/Shanghai')
     async def update_contest_info():
         async def update(oj):
             while True:
@@ -633,10 +633,10 @@ if __name__ == '__main__':
                     group_id = event.sender.group.id
                     global GROUPS
 
-                    if group_id not in GROUPS:
+                    if str(group_id) not in GROUPS:
                         f = open('group.txt', 'a')
                         f.write("{}\n".format(group_id))
-                        GROUPS.add(int(group_id))
+                        GROUPS.add(str(group_id))
                         f.close()
                         print("添加群通知：{}".format(group_id))
                         await bot.send(event, '添加成功~')
@@ -645,10 +645,10 @@ if __name__ == '__main__':
                 else:
                     qq_id = event.sender.id
                     global FRIENDS
-                    if qq_id not in FRIENDS:
+                    if str(qq_id) not in FRIENDS:
                         f = open('friend.txt', 'a')
                         f.write("{}\n".format(qq_id))
-                        FRIENDS.add(int(qq_id))
+                        FRIENDS.add(str(qq_id))
                         f.close()
                         print("添加个人通知：{}".format(qq_id))
                         await bot.send(event, '添加成功~')
