@@ -130,6 +130,7 @@ async def query_next_contest():
     next_contest.sort(key=lambda x: x[1])
     return next_contest
 
+
 if __name__ == '__main__':
     bot = Mirai(
         qq=3409201437,  # 改成你的机器人的 QQ 号
@@ -170,28 +171,29 @@ if __name__ == '__main__':
     async def show_list(event: MessageEvent):  # 功能列表展示
         msg = "".join(map(str, event.message_chain[Plain]))
 
-        menu = "\n查询天气 城市 -> 查询市级城市实时天气"\
-                "\n查询cf分数 id -> 查询对应id的 cf 分数"\
-                "\ncf -> 近场 cf 比赛" \
-                "\n随机cf -> 随机cf round"\
-                "\n今日随机cf -> 每天的随机cf round"\
-                "\natc -> 最新的AtCoder比赛"\
-                "\n牛客 -> 最新的牛客比赛"\
-                "\nlc -> 最新的力扣比赛"\
-                "\ntoday -> 查询今天比赛" \
-                "\nnext -> 查询下一场比赛"\
-                "\n来只清楚 -> 随机qcjj"\
-                "\nsetu/涩图 -> 涩图" \
-                "\n添加通知 -> 每天早上会为你发送当日比赛信息哦qwq" \
-                "\n删除通知 -> 就是不再提醒你了"\
-                "\nbug联系 -> 1095490883" \
-                "\n项目地址 -> 获取项目地址"
+        menu = "\n查询天气 城市 -> 查询市级城市实时天气" \
+               "\n查询cf分数 id -> 查询对应id的 cf 分数" \
+               "\ncf -> 近场 cf 比赛" \
+               "\n随机cf -> 随机cf round" \
+               "\n今日随机cf -> 每天的随机cf round" \
+               "\natc -> 最新的AtCoder比赛" \
+               "\n牛客 -> 最新的牛客比赛" \
+               "\nlc -> 最新的力扣比赛" \
+               "\ntoday -> 查询今天比赛" \
+               "\nnext -> 查询下一场比赛" \
+               "\n来只清楚 -> 随机qcjj" \
+               "\nsetu/涩图 -> 涩图" \
+               "\n添加通知 -> 每天早上会为你发送当日比赛信息哦qwq" \
+               "\n删除通知 -> 就是不再提醒你了" \
+               "\nbug联系 -> 1095490883" \
+               "\n项目地址 -> 获取项目地址"
 
         if msg == ".help":
             if isinstance(event, GroupMessage):
                 await bot.send(event, [At(event.sender.id), menu])
             else:
                 await bot.send(event, [menu])
+
 
     # CF
 
@@ -259,7 +261,7 @@ if __name__ == '__main__':
 
 
     @bot.on(MessageEvent)
-    async def get_daily_random_cf_contest(event: MessageEvent, _hack = [None, None]):
+    async def get_daily_random_cf_contest(event: MessageEvent, _hack=[None, None]):
         msg = "".join(map(str, event.message_chain[Plain])).strip().lower()
 
         if msg == "今日随机cf" or msg == "更新今日随机cf":
@@ -503,6 +505,7 @@ if __name__ == '__main__':
             # 发送天气消息
             await bot.send(event, await query_now_weather(city))
 
+
     @bot.on(MessageEvent)
     async def project_address(event: MessageEvent):
         msg = "".join(map(str, event.message_chain[Plain]))
@@ -519,7 +522,7 @@ if __name__ == '__main__':
         # 匹配指令
         # m = re.match(r'setu', msg.strip())
         # if m is None:
-            # m = re.match(r'涩图', msg.strip())
+        # m = re.match(r'涩图', msg.strip())
         if msg.strip() == 'setu' or msg.strip() == '涩图':
             print("setu")
             img_list = os.listdir('./pic/setu/')
@@ -581,7 +584,7 @@ if __name__ == '__main__':
 
 
     # daily
-    @scheduler.scheduled_job(CronTrigger(hour=6, minute=30), timezone='Asia/Shanghai')
+    @scheduler.scheduled_job('interval', hour=2.5, timezone='Asia/Shanghai')
     async def update_contest_info():
         async def update(oj):
             while True:
@@ -704,6 +707,10 @@ if __name__ == '__main__':
         # cf.during_time = 60
         if payload == "cf":
             await cf.update_contest(flag=1)
+        if payload == 'friend':
+            await bot.send(event, str(FRIENDS))
+        if payload == 'group':
+            await bot.send(event, str(GROUPS))
         await bot.send(event, f'命令 {payload} 执行成功。')
 
 
