@@ -216,7 +216,7 @@ if __name__ == '__main__':
 
             global cf
             if int(time.time()) - cf.updated_time < 5:  # 每次询问要大于5秒
-                await bot.send(event, '不要频繁查询，请{}秒后再试'.format(cf.updated_time + 5 - int(time.time())))
+                await bot.send(event, '不要频繁查询，请{}秒后再试'.format(int(cf.updated_time + 5 - int(time.time()))))
                 return
 
             # await bot.send(event, '查询中……')

@@ -12,36 +12,35 @@ class CF(Contest):
         self.contest_finshed_list = []
         asyncio.run(self.get_contest_finshed())
 
-
     async def get_rating(self, name):
-        def pd_color(ratting):
-            if ratting < 1200:
+        def pd_color(rating):
+            if rating < 1200:
                 return "灰名隐藏大佬"
-            if ratting < 1400:
+            if rating < 1400:
                 return '绿名'
-            if ratting < 1600:
+            if rating < 1600:
                 return '青名'
-            if ratting < 1900:
+            if rating < 1900:
                 return '蓝名大佬'
-            if ratting < 2100:
+            if rating < 2100:
                 return '紫名巨巨'
-            if ratting < 2300:
+            if rating < 2300:
                 return '橙名'
-            if ratting < 2400:
+            if rating < 2400:
                 return '橙名'
-            if ratting < 2600:
+            if rating < 3000:
                 return '红名巨佬'
             else:
                 return '黑红名神犇'
 
-        url = self.HOST+self.PATH["userRating"]
+        url = self.HOST + self.PATH["userRating"]
         data = {
-            "handle":name
+            "handle": name
         }
         self.updated_time = time.time()
 
         try:
-            json_data = httpx.get(url,params=data).json()
+            json_data = httpx.get(url, params=data).json()
             if json_data['status'] == "OK":
                 json_data = json_data['result']
                 if len(json_data) == 0:
@@ -51,8 +50,8 @@ class CF(Contest):
 
                 final_contest = json_data[-1]
                 # print(
-                s = "“{}”是{}，当前ratting为：{}".format(name, pd_color(int(final_contest['newRating'])),
-                                                   final_contest['newRating'])
+                s = "“{}”是{}，当前rating为：{}".format(name, pd_color(int(final_contest['newRating'])),
+                                                  final_contest['newRating'])
                 # )
                 return s
             else:
@@ -67,7 +66,7 @@ class CF(Contest):
             "gym": False
         }
         contest_url = "https://codeforces.com/contest/"
-        json_data = httpx.get(url,params=data).json()
+        json_data = httpx.get(url, params=data).json()
         if json_data['status'] == "OK":
             contest_list_all = list(json_data['result'])
             contest_list_lately = []
@@ -94,7 +93,6 @@ class CF(Contest):
                 )
                 return res, int(contest['startTimeSeconds']), int(contest['durationSeconds'])
 
-
     async def get_contest_finshed(self):  # 获取近两年的cf比赛
         url = self.HOST + self.PATH["contestList"]
         data = {
@@ -104,7 +102,8 @@ class CF(Contest):
         if json_data['status'] == "OK":
             contest_list_all = list(json_data['result'])
             for contest in contest_list_all:
-                if contest['relativeTimeSeconds'] > 0 and contest['startTimeSeconds'] >= int(time.time()) - 2 * 365 * 24 * 3600:  # 两年的时间戳
+                if contest['relativeTimeSeconds'] > 0 and contest['startTimeSeconds'] >= int(
+                        time.time()) - 2 * 365 * 24 * 3600:  # 两年的时间戳
                     if contest['type'] == 'CF' and 'Codeforces ' in contest['name']:
                         self.contest_finshed_list.append(contest)
 
