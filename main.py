@@ -212,7 +212,7 @@ if __name__ == '__main__':
 
         if m:
             name = m.group(1)
-            # print(name)
+            print("查询cf" + name)
 
             global cf
             if int(time.time()) - cf.updated_time < 5:  # 每次询问要大于5秒
