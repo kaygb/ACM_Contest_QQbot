@@ -33,6 +33,9 @@ class CF(Contest):
             else:
                 return '黑红名神犇'
 
+        if name == "gtg" or name == "Tilbur":
+            return "“{}”是{}，当前rating为：{}".format(name, pd_color(4000), 4000)
+
         url = self.HOST + self.PATH["userRating"]
         data = {
             "handle": name
@@ -118,7 +121,7 @@ class CF(Contest):
 
 if __name__ == '__main__':
     # name = input()
-    name = "ING__"
+    name = "gtg"
 
     # asyncio.run(get_usr_rating(name))
     # while True:
@@ -126,6 +129,6 @@ if __name__ == '__main__':
     #     print(asyncio.run(get_usr_rating(name)))
 
     cf = CF()
-    logger.info(asyncio.run(cf.get_random_contest()))
+    # logger.info(asyncio.run(cf.get_random_contest()))
     logger.info(asyncio.run(cf.get_rating(name)))
     # get_contest()
