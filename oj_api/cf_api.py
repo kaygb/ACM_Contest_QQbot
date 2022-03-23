@@ -1,3 +1,5 @@
+import pprint
+
 from oj_api.global_pk import *
 
 
@@ -107,7 +109,7 @@ class CF(Contest):
             for contest in contest_list_all:
                 if contest['relativeTimeSeconds'] > 0 and contest['startTimeSeconds'] >= int(
                         time.time()) - 2 * 365 * 24 * 3600:  # 两年的时间戳
-                    if contest['type'] == 'CF' and 'Codeforces ' in contest['name']:
+                    if (contest['type'] == 'CF' or contest['type'] == 'ICPC') and 'Codeforces' in contest['name']:
                         self.contest_finshed_list.append(contest)
 
     async def get_random_contest(self):
@@ -130,5 +132,6 @@ if __name__ == '__main__':
 
     cf = CF()
     # logger.info(asyncio.run(cf.get_random_contest()))
-    logger.info(asyncio.run(cf.get_rating(name)))
+    # logger.info(cf.contest_finshed_list)
+    pprint.pprint(cf.contest_finshed_list)
     # get_contest()

@@ -569,6 +569,23 @@ if __name__ == '__main__':
 
 
     @bot.on(MessageEvent)
+    async def gtg_query(event: MessageEvent):
+        # 从消息链中取出文本
+        msg = "".join(map(str, event.message_chain[Plain]))
+        # 匹配指令
+        # m = re.match(r'管哥哥', msg.strip())
+        if msg.strip().lower() == '来只gtg':
+            print("gtg")
+            img_list = os.listdir('./pic/gtg/')
+            img_local = './pic/gtg/' + random.choice(img_list)
+            print(img_local)
+            message_chain = MessageChain([
+                await Image.from_local(img_local)
+            ])
+            await bot.send(event, message_chain)
+
+
+    @bot.on(MessageEvent)
     async def ggg_query(event: MessageEvent):
         # 从消息链中取出文本
         msg = "".join(map(str, event.message_chain[Plain]))
