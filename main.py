@@ -285,12 +285,14 @@ if __name__ == '__main__':
         ])
         for friend in FRIENDS:
             try:
+                await asyncio.sleep(0.2)  # 减缓发送速度，降低疯狂的可能性
                 await bot.send_friend_message(friend, message_chain)  # 发送个人
             except:
                 print("不存在qq号为 {} 的好友".format(friend))
 
         for group in GROUPS:
             try:
+                await asyncio.sleep(0.2)
                 await bot.send_group_message(group, message_chain)  # 发送群组
             except:
                 print("不存在群号为 {} 的群组".format(group))
@@ -309,12 +311,14 @@ if __name__ == '__main__':
         ])
         for friend in FRIENDS:
             try:
+                await asyncio.sleep(0.2)
                 await bot.send_friend_message(friend, message_chain)  # 发送个人
             except:
                 print("不存在qq号为 {} 的好友".format(friend))
 
         for group in GROUPS:
             try:
+                await asyncio.sleep(0.2)
                 await bot.send_group_message(group, message_chain)  # 发送群组
             except:
                 print("不存在群号为 {} 的群组".format(group))
@@ -422,6 +426,7 @@ if __name__ == '__main__':
             await Image.from_local('pic/up_nc.png')
         ])
         for group in GROUPS:
+            await asyncio.sleep(0.2)
             await bot.send_group_message(group, message_chain)  # 874149706测试号
 
 
@@ -462,7 +467,7 @@ if __name__ == '__main__':
 
 
     @bot.on(MessageEvent)
-    async def qcjj_query(event: MessageEvent):
+    async def qcjj_query(event: MessageEvent): # 来只清楚
         # 从消息链中取出文本
         msg = "".join(map(str, event.message_chain[Plain]))
         # 匹配指令
@@ -697,12 +702,14 @@ if __name__ == '__main__':
             msg = "今日的比赛有：\n\n" + res.strip()
             for friend in FRIENDS:
                 try:
+                    await asyncio.sleep(0.2)
                     await bot.send_friend_message(friend, msg)  # 发送个人
                 except:
                     print("不存在qq号为 {} 的好友".format(friend))
 
             for group in GROUPS:
                 try:
+                    await asyncio.sleep(0.2)
                     await bot.send_group_message(group, msg)  # 发送群组
                 except:
                     print("不存在群号为 {} 的群组".format(group))

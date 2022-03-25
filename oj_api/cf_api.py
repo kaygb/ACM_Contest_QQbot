@@ -1,4 +1,5 @@
 import pprint
+import time
 
 from oj_api.global_pk import *
 
@@ -11,7 +12,7 @@ class CF(Contest):
             "contestList": "contest.list"
         }
         super().__init__()
-        self.contest_finshed_list = []
+        self.contest_finished_list = []
         asyncio.run(self.get_contest_finshed())
 
     async def get_rating(self, name):
@@ -35,7 +36,7 @@ class CF(Contest):
             else:
                 return '黑红名神犇'
 
-        if name == "gtg" or name == "Tilbur":
+        if name.lower() == "gtg" or name.lower() == "Tilbur":
             return "“{}”是{}，当前rating为：{}".format(name, pd_color(4000), 4000)
 
         url = self.HOST + self.PATH["userRating"]
@@ -86,7 +87,8 @@ class CF(Contest):
                 # print("最近没有比赛~")
                 return "最近没有比赛~", 0, 0
             else:
-                contest_list_lately.sort(key=lambda x: (x['relativeTimeSeconds'], x['name']), reverse=True)
+                contest_list_lately.sort(key=lambda x: (x['relativeTimeSeconds'], x['name']), reverse=True)  #
+                # 先按照时间顺序排，然后按照名字排序（有的时候会出现12同时的情况，这样可以让div2在上面）
 
                 contest = contest_list_lately[0]
                 res = "下一场Codeforces比赛为：\n"
@@ -103,18 +105,20 @@ class CF(Contest):
         data = {
             "gym": False
         }
-        json_data = httpx.get(url, params=data).json()
+
+        json_data = httpx.get(url, params=data).json()  # 向网站请求json文件
+
         if json_data['status'] == "OK":
             contest_list_all = list(json_data['result'])
             for contest in contest_list_all:
-                if contest['relativeTimeSeconds'] > 0 and contest['startTimeSeconds'] >= int(
-                        time.time()) - 2 * 365 * 24 * 3600:  # 两年的时间戳
+                if contest['relativeTimeSeconds'] > 0 and int(
+                        time.time()) - 3 * 365 * 24 * 3600 <= contest['startTimeSeconds'] <= int(time.time()) - 180 * 24 * 3600:  # 两年的时间戳
                     if (contest['type'] == 'CF' or contest['type'] == 'ICPC') and 'Codeforces' in contest['name']:
-                        self.contest_finshed_list.append(contest)
+                        self.contest_finished_list.append(contest)
 
     async def get_random_contest(self):
-        id = random.randint(1, len(self.contest_finshed_list))
-        contest = self.contest_finshed_list[id]
+        id = random.randint(1, len(self.contest_finished_list))
+        contest = self.contest_finished_list[id]
         res = "随机到的cf比赛为：\n" \
               "名称：{}\n" \
               "比赛地址：{}".format(contest['name'], "https://codeforces.com/contest/" + str(contest['id']))
@@ -133,5 +137,5 @@ if __name__ == '__main__':
     cf = CF()
     # logger.info(asyncio.run(cf.get_random_contest()))
     # logger.info(cf.contest_finshed_list)
-    pprint.pprint(cf.contest_finshed_list)
+    pprint.pprint(cf.contest_finished_list)
     # get_contest()
