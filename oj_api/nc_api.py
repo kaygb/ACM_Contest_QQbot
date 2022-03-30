@@ -35,19 +35,14 @@ class NC(Contest):
                                 durationSeconds = (int(lately_contest['endTime']) - int(
                                     lately_contest['startTime'])) // 1000
                                 return lately_contest, durationSeconds  # 只获取马上要举行的牛客比赛
-                    else:
-                        return -2, 0
             except:
-                logger.warning("发生错误")
-                return -1
+                logger.warning("牛客比赛获取 发生错误")
+                return -1, 0
 
         lately_contest, durationSeconds = await find()
 
         if lately_contest == -1:
             return -1
-
-        if lately_contest == -2:
-            return "最近无比赛哦~", 0, 0
 
         res = "下一场牛客比赛为：\n" \
               "比赛名称：{}\n" \
