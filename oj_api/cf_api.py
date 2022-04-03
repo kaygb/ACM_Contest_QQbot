@@ -66,6 +66,7 @@ class CF(Contest):
         except:
             return "程序出错，请稍后再试"
 
+
     async def get_contest(self):
         url = self.HOST + self.PATH["contestList"]
         data = {
@@ -100,6 +101,7 @@ class CF(Contest):
                 )
                 return res, int(contest['startTimeSeconds']), int(contest['durationSeconds'])
 
+
     async def get_contest_finshed(self):  # 获取近两年的cf比赛
         url = self.HOST + self.PATH["contestList"]
         data = {
@@ -116,6 +118,7 @@ class CF(Contest):
                     if (contest['type'] == 'CF' or contest['type'] == 'ICPC') and 'Codeforces' in contest['name']:
                         self.contest_finished_list.append(contest)
 
+
     async def get_random_contest(self):
         id = random.randint(1, len(self.contest_finished_list))
         contest = self.contest_finished_list[id]
@@ -123,6 +126,11 @@ class CF(Contest):
               "名称：{}\n" \
               "比赛地址：{}".format(contest['name'], "https://codeforces.com/contest/" + str(contest['id']))
         return res
+
+
+    async def update_contest(self, flag=0):
+        await super().update_contest(flag)
+        await self.get_contest_finshed()
 
 
 if __name__ == '__main__':
