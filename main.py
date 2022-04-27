@@ -8,7 +8,7 @@ import httpx
 import datetime
 import mirai
 from log import Log
-from other_operation import random_qcjj
+from other_operation import random_qcjj, qfnu_daka
 from oj_api import cf_api, atc_api, lc_api, nc_api, Contest
 from mirai.models import NewFriendRequestEvent, BotInvitedJoinGroupRequestEvent
 from mirai import Startup, Shutdown, MessageEvent
@@ -175,6 +175,7 @@ if __name__ == '__main__':
                "\n查询cf分数 id -> 查询对应id的 cf 分数" \
                "\ncf -> 近场 cf 比赛" \
                "\n随机cf -> 随机cf round" \
+               "\n随机edu/div1234 -> 随机固定场次" \
                "\n今日随机cf -> 每天的随机cf round" \
                "\natc -> 最新的AtCoder比赛" \
                "\n牛客/nc -> 最新的牛客比赛" \
@@ -256,10 +257,25 @@ if __name__ == '__main__':
     async def get_random_cf_contest(event: MessageEvent):
         msg = "".join(map(str, event.message_chain[Plain]))
 
+        global cf
         if msg.strip().lower() == '随机cf':
-            global cf
             print("随机cf")
-            await bot.send(event, await cf.get_random_contest())
+            await bot.send(event, await cf.get_random_contest('normal'))
+        if msg.strip().lower() == '随机edu':
+            print("随机edu")
+            await bot.send(event, await cf.get_random_contest('edu'))
+        if msg.strip().lower() == '随机div1':
+            print("随机div1")
+            await bot.send(event, await cf.get_random_contest('div1'))
+        if msg.strip().lower() == '随机div2':
+            print("随机div2")
+            await bot.send(event, await cf.get_random_contest('div2'))
+        if msg.strip().lower() == '随机div3':
+            print("随机div3")
+            await bot.send(event, await cf.get_random_contest('div3'))
+        if msg.strip().lower() == '随机div4':
+            print("随机div4")
+            await bot.send(event, await cf.get_random_contest('div4'))
 
 
     @bot.on(MessageEvent)
@@ -514,6 +530,7 @@ if __name__ == '__main__':
             await bot.send(event, await query_now_weather(city))
 
 
+    # 回复项目地址
     @bot.on(MessageEvent)
     async def project_address(event: MessageEvent):
         msg = "".join(map(str, event.message_chain[Plain]))
@@ -557,12 +574,12 @@ if __name__ == '__main__':
             await bot.send(event, message_chain)
 
 
+    # 来只yxc
     @bot.on(MessageEvent)
     async def yxc_query(event: MessageEvent):
         # 从消息链中取出文本
         msg = "".join(map(str, event.message_chain[Plain]))
         # 匹配指令
-        # m = re.match(r'管哥哥', msg.strip())
         if msg.strip().lower() == '来只yxc':
             print("yxc")
             img_list = os.listdir('./pic/yxc/')
@@ -574,6 +591,7 @@ if __name__ == '__main__':
             await bot.send(event, message_chain)
 
 
+    # 来只gtg（提高二群功能）
     @bot.on(MessageEvent)
     async def gtg_query(event: MessageEvent):
         # 从消息链中取出文本
@@ -591,6 +609,7 @@ if __name__ == '__main__':
             await bot.send(event, message_chain)
 
 
+    # 来只管哥哥（限于qfnu功能）
     @bot.on(MessageEvent)
     async def ggg_query(event: MessageEvent):
         # 从消息链中取出文本
@@ -607,6 +626,17 @@ if __name__ == '__main__':
             ])
             await bot.send(event, message_chain)
 
+    @bot.on(MessageEvent)
+    async def qfnu(event: MessageEvent):
+        msg = "".join(map(str, event.message_chain[Plain]))
+        if msg.strip() == 'dk':
+            print('dk')
+            info_list = qfnu_daka.dk()
+            res = ""
+            for info in info_list:
+                print(info)
+                res += info + '\n'
+            await bot.send(event, res)
 
     # daily
     @scheduler.scheduled_job('interval', hours=2, timezone='Asia/Shanghai')
@@ -715,6 +745,15 @@ if __name__ == '__main__':
                 except:
                     print("不存在群号为 {} 的群组".format(group))
 
+
+    @scheduler.scheduled_job(CronTrigger(hour=8,timezone='Asia/Shanghai'))
+    async def daily_qfnu_daka():
+        info_list = qfnu_daka.dk()
+        res = ""
+        for info in info_list:
+            res += info + '\n'
+        print("daily_qfnu_daka")
+        await bot.send_friend_message('1095490883', res)
 
     # debug
     @Filter(FriendMessage)

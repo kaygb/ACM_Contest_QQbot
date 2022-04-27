@@ -1,3 +1,4 @@
+import asyncio
 import pprint
 import time
 
@@ -12,7 +13,12 @@ class CF(Contest):
             "contestList": "contest.list"
         }
         super().__init__()
-        self.contest_finished_list = []
+        self.all_contest_list = []
+        self.edu_list = []
+        self.div1_list = []
+        self.div2_list = []
+        self.div3_list = []
+        self.div4_list = []
         asyncio.run(self.get_contest_finshed())
 
     async def get_rating(self, name):
@@ -35,9 +41,6 @@ class CF(Contest):
                 return '红名巨佬'
             else:
                 return '黑红名神犇'
-
-        if name.lower() == "gtg" or name.lower() == "Tilbur":
-            return "“{}”是{}，当前rating为：{}".format(name, pd_color(4000), 4000)
 
         url = self.HOST + self.PATH["userRating"]
         data = {
@@ -65,7 +68,6 @@ class CF(Contest):
                 return -1  # 表示请求失败
         except:
             return "程序出错，请稍后再试"
-
 
     async def get_contest(self):
         url = self.HOST + self.PATH["contestList"]
@@ -101,8 +103,7 @@ class CF(Contest):
                 )
                 return res, int(contest['startTimeSeconds']), int(contest['durationSeconds'])
 
-
-    async def get_contest_finshed(self):  # 获取近两年的cf比赛
+    async def get_all_finshed_contest(self):  # 获取所有的比赛json
         url = self.HOST + self.PATH["contestList"]
         data = {
             "gym": False
@@ -110,23 +111,56 @@ class CF(Contest):
 
         json_data = httpx.get(url, params=data).json()  # 向网站请求json文件
 
+        return json_data
+
+    async def get_contest_finshed(self):  # 获取近两年的cf比赛
+
+        json_data = await self.get_all_finshed_contest()  # 向网站请求json文件
+
         if json_data['status'] == "OK":
             contest_list_all = list(json_data['result'])
             for contest in contest_list_all:
                 if contest['relativeTimeSeconds'] > 0 and int(
-                        time.time()) - 3 * 365 * 24 * 3600 <= contest['startTimeSeconds'] <= int(time.time()) - 180 * 24 * 3600:  # 两年的时间戳
-                    if (contest['type'] == 'CF' or contest['type'] == 'ICPC') and 'Codeforces' in contest['name']:
-                        self.contest_finished_list.append(contest)
+                        time.time()) - 3 * 365 * 24 * 3600 <= contest['startTimeSeconds'] <= int(
+                    time.time()) - 180 * 24 * 3600:  # 3年前到180天前
+                    if (contest['type'] == 'CF' or contest['type'] == 'ICPC') and 'Codeforces' in contest['name']:  # 筛选常规的
+                        self.all_contest_list.append(contest)
+                        if 'Educational Codeforces Round' in contest['name']:
+                            self.edu_list.append(contest)
+                        elif 'Div. 3' in contest['name']:
+                            self.div3_list.append(contest)
+                        elif 'Div. 2' in contest['name']:
+                            self.div2_list.append(contest)
+                        elif 'Div. 1' in contest['name']:
+                            self.div1_list.append(contest)
+                        elif 'Div. 4' in contest['name']:
+                            self.div4_list.append(contest)
 
 
-    async def get_random_contest(self):
-        id = random.randint(1, len(self.contest_finished_list))
-        contest = self.contest_finished_list[id]
+    async def get_random_contest(self, type='normal'):
+        if type == 'normal':
+            id = random.randint(1, len(self.all_contest_list))
+            contest = self.all_contest_list[id]
+        if type == 'edu':
+            id = random.randint(1, len(self.edu_list))
+            contest = self.edu_list[id]
+        if type == 'div1':
+            id = random.randint(1, len(self.div1_list))
+            contest = self.div1_list[id]
+        if type == 'div2':
+            id = random.randint(1, len(self.div2_list))
+            contest = self.div2_list[id]
+        if type == 'div3':
+            id = random.randint(1, len(self.div3_list))
+            contest = self.div3_list[id]
+        if type == 'div4':
+            id = random.randint(1, len(self.div4_list))
+            contest = self.div4_list[id]
+
         res = "随机到的cf比赛为：\n" \
               "名称：{}\n" \
               "比赛地址：{}".format(contest['name'], "https://codeforces.com/contest/" + str(contest['id']))
         return res
-
 
     async def update_contest(self, flag=0):
         await super().update_contest(flag)
@@ -135,7 +169,6 @@ class CF(Contest):
 
 if __name__ == '__main__':
     # name = input()
-    name = "gtg"
 
     # asyncio.run(get_usr_rating(name))
     # while True:
@@ -145,5 +178,5 @@ if __name__ == '__main__':
     cf = CF()
     # logger.info(asyncio.run(cf.get_random_contest()))
     # logger.info(cf.contest_finshed_list)
-    pprint.pprint(cf.contest_finished_list)
+    pprint.pprint(cf.div1_list)
     # get_contest()
