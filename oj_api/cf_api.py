@@ -139,22 +139,22 @@ class CF(Contest):
 
     async def get_random_contest(self, type='normal'):
         if type == 'normal':
-            id = random.randint(1, len(self.all_contest_list))
+            id = random.randint(0, len(self.all_contest_list) - 1)
             contest = self.all_contest_list[id]
         if type == 'edu':
-            id = random.randint(1, len(self.edu_list))
+            id = random.randint(0, len(self.edu_list) - 1)
             contest = self.edu_list[id]
         if type == 'div1':
-            id = random.randint(1, len(self.div1_list))
+            id = random.randint(0, len(self.div1_list) - 1)
             contest = self.div1_list[id]
         if type == 'div2':
-            id = random.randint(1, len(self.div2_list))
+            id = random.randint(0, len(self.div2_list) - 1)
             contest = self.div2_list[id]
         if type == 'div3':
-            id = random.randint(1, len(self.div3_list))
+            id = random.randint(0, len(self.div3_list) - 1)
             contest = self.div3_list[id]
         if type == 'div4':
-            id = random.randint(1, len(self.div4_list))
+            id = random.randint(0, len(self.div4_list) - 1)
             contest = self.div4_list[id]
 
         res = "随机到的cf比赛为：\n" \
