@@ -129,6 +129,9 @@ class CF(Contest):
                             self.edu_list.append(contest)
                         elif 'Div. 3' in contest['name']:
                             self.div3_list.append(contest)
+                        elif 'Div. 1 + Div. 2' in contest['name']:
+                            self.div1_list.append(contest)
+                            self.div2_list.append(contest)
                         elif 'Div. 2' in contest['name']:
                             self.div2_list.append(contest)
                         elif 'Div. 1' in contest['name']:
