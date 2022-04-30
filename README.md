@@ -44,6 +44,7 @@
 * 计时器（定时器）有未知问题，不稳定
   * 导致cf上号提醒可能会有点问题
   * 运行时间越长概率越高
+  * 已有解决方案，忙于比赛还未完成
 
 ### 接口调用
 本项目基于Python3.8.10为主要开发版本，以[YiriMirai](https://github.com/YiriMiraiProject/YiriMirai) 为主要依赖库
