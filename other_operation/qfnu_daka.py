@@ -60,3 +60,4 @@ def dk():
 
 if __name__ == '__main__':
     dk()
+    errorinfo.clear()

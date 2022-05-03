@@ -730,7 +730,7 @@ if __name__ == '__main__':
 
         if res != '':
             # 发送当日信息
-            msg = "今日的比赛有：\n\n" + res.strip()
+            msg = "早上好呀！今日的比赛有：\n\n" + res.strip()
             for friend in FRIENDS:
                 try:
                     await asyncio.sleep(0.2)
@@ -751,6 +751,7 @@ if __name__ == '__main__':
         info_list = qfnu_daka.dk()
         res = ""
         for info in info_list:
+            print(info)
             res += info + '\n'
         print("daily_qfnu_daka")
         await bot.send_friend_message('1095490883', res)
