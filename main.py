@@ -443,8 +443,11 @@ if __name__ == '__main__':
             await Image.from_local('pic/up_nc.png')
         ])
         for group in GROUPS:
-            await asyncio.sleep(0.2)
-            await bot.send_group_message(group, message_chain)  # 874149706测试号
+            try:
+                await asyncio.sleep(0.2)
+                await bot.send_group_message(group, message_chain)  # 发送群组
+            except:
+                print("不存在群号为 {} 的群组".format(group))
 
 
     # 力扣
