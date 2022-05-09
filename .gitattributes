@@ -1,0 +1,6 @@
+pic filter=lfs diff=lfs merge=lfs -text
+pic/* filter=lfs diff=lfs merge=lfs -text
+pic/gtg/* filter=lfs diff=lfs merge=lfs -text
+pic/qcjj/* filter=lfs diff=lfs merge=lfs -text
+pic/setu/* filter=lfs diff=lfs merge=lfs -text
+pic/yxc/* filter=lfs diff=lfs merge=lfs -text

@@ -56,7 +56,9 @@ def dk():
     for i in info.keys():
         myHealth(i, info[i])
     # print(errorinfo)
-    return errorinfo
+    res = errorinfo
+    errorinfo.clear()
+    return res
 
 if __name__ == '__main__':
     dk()
