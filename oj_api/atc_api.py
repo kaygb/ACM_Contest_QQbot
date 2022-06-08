@@ -78,12 +78,10 @@ class ATC(Contest):
 
         # -----xpath办法失败，不知道为什么获取的值都是空的，有没有懂的大佬可以解答一下qwq-------
 
-        r = r'<th class="no-break">Rating<\/th><td><span class=\'user-gray\'>(.*?)<\/span>'
+        r = r'<th class="no-break">Rating<\/th><td><span class=(.*?)>(.*?)<\/span>'
         results = re.findall(r, html, re.S)
-
-        # print(results)
         try:
-            return results[0]
+            return results[0][1]
         except:
             return -1
 
