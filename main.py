@@ -295,7 +295,8 @@ if __name__ == '__main__':
                                          day=time.localtime(cf.begin_time - 15 * 60).tm_mday,
                                          hour=time.localtime(cf.begin_time - 15 * 60).tm_hour,
                                          minute=time.localtime(cf.begin_time - 15 * 60).tm_min,
-                                         timezone='Asia/Shanghai'))
+                                         timezone='Asia/Shanghai'),
+                             misfire_grace_time=60)
     async def cf_shang_hao():
         message_chain = MessageChain([
             await Image.from_local('pic/up_cf.jpg')
@@ -321,7 +322,8 @@ if __name__ == '__main__':
                     day=time.localtime(cf.begin_time + cf.during_time).tm_mday,
                     hour=time.localtime(cf.begin_time + cf.during_time).tm_hour,
                     minute=time.localtime(cf.begin_time + cf.during_time).tm_min,
-                    timezone='Asia/Shanghai'))
+                    timezone='Asia/Shanghai'),
+        misfire_grace_time=60)
     async def cf_xia_hao():
         message_chain = MessageChain([
             await Image.from_local('pic/down_cf.jpg')
@@ -437,7 +439,8 @@ if __name__ == '__main__':
                                          day=time.localtime(nc.begin_time - 10 * 60).tm_mday,
                                          hour=time.localtime(nc.begin_time - 10 * 60).tm_hour,
                                          minute=time.localtime(nc.begin_time - 10 * 60).tm_min,
-                                         timezone='Asia/Shanghai'))
+                                         timezone='Asia/Shanghai'),
+                             misfire_grace_time=60)
     async def nc_shang_hao():
         message_chain = MessageChain([
             await Image.from_local('pic/up_nc.png')
@@ -487,7 +490,7 @@ if __name__ == '__main__':
 
 
     @bot.on(MessageEvent)
-    async def qcjj_query(event: MessageEvent): # 来只清楚
+    async def qcjj_query(event: MessageEvent):  # 来只清楚
         # 从消息链中取出文本
         msg = "".join(map(str, event.message_chain[Plain]))
         # 匹配指令
@@ -629,6 +632,7 @@ if __name__ == '__main__':
             ])
             await bot.send(event, message_chain)
 
+
     @bot.on(MessageEvent)
     async def qfnu(event: MessageEvent):
         msg = "".join(map(str, event.message_chain[Plain]))
@@ -641,8 +645,10 @@ if __name__ == '__main__':
                 res += info + '\n'
             await bot.send(event, res)
 
+
     # daily
-    @scheduler.scheduled_job('interval', hours=2, timezone='Asia/Shanghai')
+    @scheduler.scheduled_job('interval', hours=2, timezone='Asia/Shanghai',
+                             misfire_grace_time=60)
     async def update_contest_info():
         async def update(oj):
             while True:
@@ -749,7 +755,8 @@ if __name__ == '__main__':
                     print("不存在群号为 {} 的群组".format(group))
 
 
-    @scheduler.scheduled_job(CronTrigger(hour=8,timezone='Asia/Shanghai'))
+    @scheduler.scheduled_job(CronTrigger(hour=8, timezone='Asia/Shanghai'),
+                                         misfire_grace_time=60)
     async def daily_qfnu_daka():
         info_list = qfnu_daka.dk()
         res = ""
@@ -758,6 +765,7 @@ if __name__ == '__main__':
             res += info + '\n'
         print("daily_qfnu_daka")
         await bot.send_friend_message('1095490883', res)
+
 
     # debug
     @Filter(FriendMessage)
