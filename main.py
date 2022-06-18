@@ -17,8 +17,8 @@ from apscheduler.triggers.cron import CronTrigger
 from mirai_extensions.trigger import HandlerControl, Filter
 from mirai import Mirai, WebSocketAdapter, FriendMessage, GroupMessage, At, Plain, MessageChain, Image
 
-sys.stdout = Log.Logger()  # 定义log类
-sys.stderr = Log.Logger()
+sys.stdout = Log.Logger("./log/log.txt")  # 定义log类
+sys.stderr = Log.Logger("./log/log.txt")
 scheduler = AsyncIOScheduler()
 API_KEY = 'SWeKQBWfoYiQFuZSJ'
 
