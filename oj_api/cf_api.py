@@ -19,7 +19,7 @@ class CF(Contest):
         self.div2_list = []
         self.div3_list = []
         self.div4_list = []
-        asyncio.run(self.get_contest_finshed())
+        asyncio.run(self.get_contest_finished())
 
     async def get_rating(self, name):
         def pd_color(rating):
@@ -93,17 +93,21 @@ class CF(Contest):
                 contest_list_lately.sort(key=lambda x: (x['relativeTimeSeconds'], x['name']), reverse=True)  #
                 # 先按照时间顺序排，然后按照名字排序（有的时候会出现12同时的情况，这样可以让div2在上面）
 
-                contest = contest_list_lately[0]
-                res = "下一场Codeforces比赛为：\n"
-                res += "比赛名称：{}\n开始时间：{}\n持续时间：{}\n比赛地址：{}".format(
-                    contest['name'],
-                    time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(int(contest['startTimeSeconds']))),
-                    "{}小时{:02d}分钟".format(contest['durationSeconds'] // 3600, contest['durationSeconds'] % 3600 // 60),
-                    contest_url + str(contest['id'])
-                )
-                return res, int(contest['startTimeSeconds']), int(contest['durationSeconds'])
+                res = []
 
-    async def get_all_finshed_contest(self):  # 获取所有的比赛json
+                for i in range(min(4, len(contest_list_lately))):  # 存4留3
+                    # contest = contest_list_lately[0]
+                    res = "下一场Codeforces比赛为：\n"
+                    res += "比赛名称：{}\n开始时间：{}\n持续时间：{}\n比赛地址：{}".format(
+                        contest_list_lately[i]['name'],
+                        time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(int(contest_list_lately[i]['startTimeSeconds']))),
+                        "{}小时{:02d}分钟".format(contest_list_lately[i]['durationSeconds'] // 3600,
+                                              contest_list_lately[i]['durationSeconds'] % 3600 // 60),
+                        contest_url + str(contest_list_lately[i]['id'])
+                    )
+                return res, int(res[0]['startTimeSeconds']), int(res[0]['durationSeconds'])
+
+    async def get_all_finished_contest(self):  # 获取所有的比赛json
         url = self.HOST + self.PATH["contestList"]
         data = {
             "gym": False
@@ -113,22 +117,24 @@ class CF(Contest):
 
         return json_data
 
-    async def get_contest_finshed(self):  # 获取近两年的cf比赛
+    async def get_contest_finished(self):  # 获取近两年的cf比赛
 
-        json_data = await self.get_all_finshed_contest()  # 向网站请求json文件
+        json_data = await self.get_all_finished_contest()  # 向网站请求json文件
 
         if json_data['status'] == "OK":
             contest_list_all = list(json_data['result'])
             for contest in contest_list_all:
 
-                if (contest['type'] == 'CF' or contest['type'] == 'ICPC') and 'Codeforces' in contest['name']:  # 筛选edu，不带时间
+                if (contest['type'] == 'CF' or contest['type'] == 'ICPC') and 'Codeforces' in contest[
+                    'name']:  # 筛选edu，不带时间
                     if 'Educational Codeforces Round' in contest['name']:
                         self.edu_list.append(contest)
 
                 if contest['relativeTimeSeconds'] > 0 and int(
                         time.time()) - 3 * 365 * 24 * 3600 <= contest['startTimeSeconds'] <= int(
                     time.time()) - 180 * 24 * 3600:  # 3年前到180天前
-                    if (contest['type'] == 'CF' or contest['type'] == 'ICPC') and 'Codeforces' in contest['name']:  # 筛选常规的
+                    if (contest['type'] == 'CF' or contest['type'] == 'ICPC') and 'Codeforces' in contest[
+                        'name']:  # 筛选常规的
                         self.all_contest_list.append(contest)
                         if 'Div. 3' in contest['name']:
                             self.div3_list.append(contest)
@@ -141,9 +147,6 @@ class CF(Contest):
                             self.div1_list.append(contest)
                         elif 'Div. 4' in contest['name']:
                             self.div4_list.append(contest)
-
-
-
 
     async def get_random_contest(self, type='normal'):
         if type == 'normal':
@@ -172,7 +175,7 @@ class CF(Contest):
 
     async def update_contest(self, flag=0):
         await super().update_contest(flag)
-        await self.get_contest_finshed()
+        await self.get_contest_finished()
 
 
 if __name__ == '__main__':

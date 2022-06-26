@@ -7,7 +7,10 @@ class Contest(metaclass=abc.ABCMeta):
     def __init__(self):
         self.updated_time = time.time()
         self.info, self.begin_time, self.during_time = "", 0, 0  # 时间全以时间戳为单位
+        # 下列时间都是最新未开始的比赛时间
         self.info, self.begin_time, self.during_time = asyncio.run(self.get_contest())
+        self.note_time = self.begin_time - 15 * 60
+        self.end_time = self.begin_time + self.during_time
 
 
     async def update_contest(self, flag=0):  # flag=1代表强制更新

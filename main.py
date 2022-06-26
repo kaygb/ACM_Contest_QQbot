@@ -6,11 +6,14 @@ import asyncio
 import random
 import httpx
 import datetime
+
+from mirai.models.api import MessageFromIdResponse
+
 import mirai
 from log import Log
 from other_operation import random_qcjj, qfnu_daka
 from oj_api import cf_api, atc_api, lc_api, nc_api, Contest
-from mirai.models import NewFriendRequestEvent, BotInvitedJoinGroupRequestEvent
+from mirai.models import NewFriendRequestEvent, BotInvitedJoinGroupRequestEvent, Quote
 from mirai import Startup, Shutdown, MessageEvent
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
@@ -52,6 +55,45 @@ f.close()
 f = open('group.txt', 'r')
 GROUPS = set(map(lambda x: x.strip(), f.readlines()))
 f.close()
+
+# 随机发送图片的准备工作
+pic_qcjj = os.listdir('./pic/qcjj/')
+pic_setu = os.listdir('./pic/setu/')
+
+
+# 保证不随机一遍之后不会出现重复的
+async def lzqc():
+    global pic_qcjj
+    while True:
+        if pic_qcjj:
+            pic_name = random.choice(pic_qcjj)
+            img_local = './pic/qcjj/' + pic_name
+            pic_qcjj.remove(pic_name)
+            return img_local
+        else:
+            pic_qcjj = os.listdir('./pic/qcjj/')
+
+
+async def lz_setu():
+    global pic_setu
+    while True:
+        if pic_setu:
+            pic_name = random.choice(pic_setu)
+            img_local = './pic/setu/' + pic_name
+            pic_setu.remove(pic_name)
+            return img_local
+        else:
+            pic_setu = os.listdir('./pic/setu/')
+
+
+# 添加定时器
+async def sche_add(func, implement, id=None):
+    scheduler.add_job(func, CronTrigger(month=time.localtime(implement).tm_mon,
+                                        day=time.localtime(implement).tm_mday,
+                                        hour=time.localtime(implement).tm_hour,
+                                        minute=time.localtime(implement).tm_min,
+                                        second=time.localtime(implement).tm_sec,
+                                        timezone='Asia/Shanghai'), id=id, misfire_grace_time=60)
 
 
 async def query_now_weather(city: str) -> str:
@@ -133,7 +175,7 @@ async def query_next_contest():
 
 if __name__ == '__main__':
     bot = Mirai(
-        qq=3409201437,  # 改成你的机器人的 QQ 号
+        qq=3636153064,  # 改成你的机器人的 QQ 号
         adapter=WebSocketAdapter(
             verify_key='yirimirai', host='localhost', port=8080
         )
@@ -174,7 +216,7 @@ if __name__ == '__main__':
         menu = "\n查询天气 城市 -> 查询市级城市实时天气" \
                "\n查询cf分数 id -> 查询对应id的 cf 分数" \
                "\ncf -> 近场 cf 比赛" \
-               "\n随机cf -> 随机cf round" \
+               "\n随机cf -> 随机cf round（随机近180天到3年内的vp）" \
                "\n随机edu/div1234 -> 随机固定场次" \
                "\n今日随机cf -> 每天的随机cf round" \
                "\natc -> 最新的AtCoder比赛" \
@@ -183,6 +225,7 @@ if __name__ == '__main__':
                "\ntoday -> 查询今天比赛" \
                "\nnext -> 查询下一场比赛" \
                "\n来只清楚 -> 随机qcjj" \
+               "\n添加清楚->使用qq回复功能选择图片回复发送“添加清楚”" \
                "\n来只yxc -> 随机yxc" \
                "\nsetu/涩图 -> 涩图" \
                "\n添加通知 -> 每天早上会为你发送当日比赛信息哦qwq" \
@@ -292,12 +335,6 @@ if __name__ == '__main__':
             await bot.send(event, _hack[1])
 
 
-    @scheduler.scheduled_job(CronTrigger(month=time.localtime(cf.begin_time - 15 * 60).tm_mon,
-                                         day=time.localtime(cf.begin_time - 15 * 60).tm_mday,
-                                         hour=time.localtime(cf.begin_time - 15 * 60).tm_hour,
-                                         minute=time.localtime(cf.begin_time - 15 * 60).tm_min,
-                                         timezone='Asia/Shanghai'),
-                             misfire_grace_time=60)
     async def cf_shang_hao():
         message_chain = MessageChain([
             await Image.from_local('pic/up_cf.jpg')
@@ -318,13 +355,7 @@ if __name__ == '__main__':
         # await bot.send_group_message(763537993, message_chain)  # 874149706测试号
 
 
-    @scheduler.scheduled_job(
-        CronTrigger(month=time.localtime(cf.begin_time + cf.during_time).tm_mon,
-                    day=time.localtime(cf.begin_time + cf.during_time).tm_mday,
-                    hour=time.localtime(cf.begin_time + cf.during_time).tm_hour,
-                    minute=time.localtime(cf.begin_time + cf.during_time).tm_min,
-                    timezone='Asia/Shanghai'),
-        misfire_grace_time=60)
+
     async def cf_xia_hao():
         message_chain = MessageChain([
             await Image.from_local('pic/down_cf.jpg')
@@ -437,12 +468,6 @@ if __name__ == '__main__':
             await bot.send(event, nc.info if nc.info != -1 else "获取比赛时出错，请联系管理员")
 
 
-    @scheduler.scheduled_job(CronTrigger(month=time.localtime(nc.begin_time - 10 * 60).tm_mon,
-                                         day=time.localtime(nc.begin_time - 10 * 60).tm_mday,
-                                         hour=time.localtime(nc.begin_time - 10 * 60).tm_hour,
-                                         minute=time.localtime(nc.begin_time - 10 * 60).tm_min,
-                                         timezone='Asia/Shanghai'),
-                             misfire_grace_time=60)
     async def nc_shang_hao():
         message_chain = MessageChain([
             await Image.from_local('pic/up_nc.png')
@@ -492,23 +517,6 @@ if __name__ == '__main__':
 
 
     @bot.on(MessageEvent)
-    async def qcjj_query(event: MessageEvent):  # 来只清楚
-        # 从消息链中取出文本
-        msg = "".join(map(str, event.message_chain[Plain]))
-        # 匹配指令
-        # m = re.match(r'来只清楚', msg.strip())
-        if msg == '来只清楚':
-            print("来只清楚")
-            img_list = os.listdir('./pic/qcjj/')
-            img_local = './pic/qcjj/' + random.choice(img_list)
-            print(img_local)
-            message_chain = MessageChain([
-                await Image.from_local(img_local)
-            ])
-            await bot.send(event, message_chain)
-
-
-    @bot.on(MessageEvent)
     async def echo(event: MessageEvent):  # 复读机
         msg = "".join(map(str, event.message_chain[Plain])).strip()
         m = re.match(r'^echo\s*(\w+)\s*$', msg)
@@ -518,8 +526,11 @@ if __name__ == '__main__':
 
     @bot.on(MessageEvent)
     async def on_group_message(event: MessageEvent):  # 返回
-        if At(bot.qq) in event.message_chain and len("".join(map(str, event.message_chain[Plain]))) == 0:
-            await bot.send(event, [At(event.sender.id), '你在叫我吗？'])
+        if At(bot.qq) in event.message_chain and len("".join(map(str, event.message_chain[Plain]))) in [0, 1]:
+            message_chain = MessageChain([
+                await Image.from_local('./pic/at_bot.gif')
+            ])
+            await bot.send(event, message_chain)
 
 
     @bot.on(MessageEvent)
@@ -547,20 +558,58 @@ if __name__ == '__main__':
             await bot.send(event, "大佬可以点个star✨吗qwq\nhttps://github.com/INGg/ACM_Contest_QQbot")
 
 
+    # 随机图片功能
+
+    @bot.on(MessageEvent)
+    async def add_image(event: MessageEvent):
+        global pic_qcjj
+        msg = "".join(map(str, event.message_chain[Plain]))
+        if msg.strip() == '添加清楚':
+            if event.sender.id == 2454256424 or event.sender.group.id in [601621184, 839594887, 874149706, 215516112]:
+                quotes = event.message_chain[Quote]
+                for quote in quotes:
+                    message: MessageFromIdResponse = await bot.message_from_id(quote.id)
+                    images = message.data.message_chain[Image]
+                    for image in images:
+                        all_img_qcjj = os.listdir('./pic/qcjj/')
+                        suffix = image.image_id.split('.')[1]
+                        id_qcjj = str(len(all_img_qcjj) + 1) + '.' + suffix
+                        filename_qcjj = './pic/qcjj/' + id_qcjj
+                        await image.download(filename_qcjj, None, False)
+                        pic_qcjj.append(id_qcjj)
+                        print("添加清楚成功")
+                        await bot.send(event, '添加成功！')
+            else:
+                await bot.send(event, "本群暂无权限，请联系管理员！")
+
+
+    @bot.on(MessageEvent)
+    async def qcjj_query(event: MessageEvent):  # 来只清楚
+        # 从消息链中取出文本
+        msg = "".join(map(str, event.message_chain[Plain]))
+        # 匹配指令
+        if re.match(r'来只清楚', msg.strip()):
+            print("来只清楚")
+            img_local = await lzqc()
+            print(img_local)
+            message_chain = MessageChain([
+                await Image.from_local(img_local)
+            ])
+            await bot.send(event, message_chain)
+
+
     # setu
     @bot.on(MessageEvent)
     async def setu_query(event: MessageEvent):
         # 从消息链中取出文本
         msg = "".join(map(str, event.message_chain[Plain]))
         # 匹配指令
-        # m = re.match(r'setu', msg.strip())
-        # if m is None:
-        # m = re.match(r'涩图', msg.strip())
-        if msg.strip() == 'setu' or msg.strip() == '涩图':
+        m = re.match(r'setu', msg.strip())
+        if m is None:
+            m = re.match(r'涩图', msg.strip())
+        if m:
             print("setu")
-            img_list = os.listdir('./pic/setu/')
-            img_local = './pic/setu/' + random.choice(img_list)
-            print(img_local)
+            img_local = await lz_setu()
             message_chain = MessageChain([
                 await Image.from_local(img_local)
             ])
@@ -649,8 +698,6 @@ if __name__ == '__main__':
 
 
     # daily
-    @scheduler.scheduled_job('interval', hours=2, timezone='Asia/Shanghai',
-                             misfire_grace_time=60)
     async def update_contest_info():
         async def update(oj):
             while True:
@@ -732,7 +779,6 @@ if __name__ == '__main__':
             await bot.send(event, '删除通知还没想好怎么写qwq，请联系管理员删除哦~ qq：1095490883')
 
 
-    @scheduler.scheduled_job(CronTrigger(hour=7, minute=30), timezone='Asia/Shanghai')
     async def notify_contest_info():
         res = await query_today_contest()
 
@@ -757,8 +803,6 @@ if __name__ == '__main__':
                     print("不存在群号为 {} 的群组".format(group))
 
 
-    @scheduler.scheduled_job(CronTrigger(hour=8, timezone='Asia/Shanghai'),
-                                         misfire_grace_time=60)
     async def daily_qfnu_daka():
         info_list = qfnu_daka.dk()
         res = ""
@@ -767,6 +811,33 @@ if __name__ == '__main__':
             res += info + '\n'
         print("daily_qfnu_daka")
         await bot.send_friend_message('1095490883', res)
+
+
+    @scheduler.scheduled_job('interval', minutes=30, timezone='Asia/Shanghai')
+    async def refresh_job():
+        scheduler.remove_all_jobs()
+        await update_contest_info()
+        await sche_job()
+        msg = 'success：' + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+        await bot.send_friend_message(1095490883, msg)
+
+
+    async def sche_job():
+        global cf, atc, nc, lc
+        # 每九个小时更新一下比赛信息
+        scheduler.add_job(update_contest_info, 'interval', hours=9, timezone='Asia/Shanghai', misfire_grace_time=60)
+        # 每天早上七点半通知
+        scheduler.add_job(notify_contest_info, CronTrigger(hour=7, minute=30, timezone='Asia/Shanghai'),
+                          misfire_grace_time=60)
+        # 重新启动刷新函数
+        scheduler.add_job(refresh_job, 'cron', hour=5, minute=0, second=0, timezone='Asia/Shanghai',
+                          misfire_grace_time=60)
+        # 启动所有的定时任务
+        scheduler.add_job(daily_qfnu_daka, CronTrigger(hour=8, timezone='Asia/Shanghai'),
+                          misfire_grace_time=60)
+        await sche_add(cf_shang_hao, cf.note_time)
+        await sche_add(cf_xia_hao, cf.end_time)
+        await sche_add(nc_shang_hao, nc.note_time)
 
 
     # debug
