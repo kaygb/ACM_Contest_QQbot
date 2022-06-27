@@ -46,7 +46,6 @@ class CF(Contest):
         data = {
             "handle": name
         }
-        self.updated_time = time.time()
 
         try:
             json_data = httpx.get(url, params=data).json()
@@ -75,7 +74,26 @@ class CF(Contest):
             "gym": False
         }
         contest_url = "https://codeforces.com/contest/"
-        json_data = httpx.get(url, params=data).json()
+
+        try:
+            json_data = httpx.get(url, params=data).json()
+        except:
+            # 如果请求失败就判断时候应当更换比赛信息
+            if time.time() > self.get_end_time():
+                if len(self.list) > 0:
+                    del (self.list[0])
+                    return self.list, self.list[0]['begin_time'], self.list[0]['during_time']
+                else:
+                    return [
+                               {
+                                   "contest_info": "最近没有比赛~",
+                                   'begin_time': NO_CONTEST,
+                                   'during_time': NO_CONTEST,
+                               }
+                           ], NO_CONTEST, NO_CONTEST
+            else:
+                return self.list, self.list[0]['begin_time'], self.list[0]['during_time']
+
         if json_data['status'] == "OK":
             contest_list_all = list(json_data['result'])
             contest_list_lately = []
@@ -88,24 +106,35 @@ class CF(Contest):
 
             if len(contest_list_lately) == 0:
                 # print("最近没有比赛~")
-                return "最近没有比赛~", 0, 0
+                return [
+                           {
+                               "contest_info": "最近没有比赛~",
+                               'begin_time': NO_CONTEST,
+                               'during_time': NO_CONTEST,
+                           }
+                       ], NO_CONTEST, NO_CONTEST
             else:
                 contest_list_lately.sort(key=lambda x: (x['relativeTimeSeconds'], x['name']), reverse=True)  #
                 # 先按照时间顺序排，然后按照名字排序（有的时候会出现12同时的情况，这样可以让div2在上面）
 
                 res = []
 
-                for i in range(min(4, len(contest_list_lately))):  # 存4留3
-                    # contest = contest_list_lately[0]
-                    res = "下一场Codeforces比赛为：\n"
-                    res += "比赛名称：{}\n开始时间：{}\n持续时间：{}\n比赛地址：{}".format(
-                        contest_list_lately[i]['name'],
-                        time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(int(contest_list_lately[i]['startTimeSeconds']))),
-                        "{}小时{:02d}分钟".format(contest_list_lately[i]['durationSeconds'] // 3600,
-                                              contest_list_lately[i]['durationSeconds'] % 3600 // 60),
-                        contest_url + str(contest_list_lately[i]['id'])
+                for i in range(min(5, len(contest_list_lately))):
+                    contest = contest_list_lately[i]
+                    res.append(
+                        {
+                            'contest_info': "比赛名称：{}\n开始时间：{}\n持续时间：{}\n比赛地址：{}".format(
+                                contest['name'],
+                                time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(int(contest['startTimeSeconds']))),
+                                "{}小时{:02d}分钟".format(contest['durationSeconds'] // 3600,
+                                                      contest['durationSeconds'] % 3600 // 60),
+                                contest_url + str(contest['id'])
+                            ),
+                            'begin_time': contest['startTimeSeconds'],
+                            'during_time': contest['durationSeconds'],
+                        }
                     )
-                return res, int(res[0]['startTimeSeconds']), int(res[0]['durationSeconds'])
+                return res, res[0]['begin_time'], res[0]['during_time']
 
     async def get_all_finished_contest(self):  # 获取所有的比赛json
         url = self.HOST + self.PATH["contestList"]
@@ -187,7 +216,8 @@ if __name__ == '__main__':
     #     print(asyncio.run(get_usr_rating(name)))
 
     cf = CF()
+    pprint.pprint((cf.list))
     # logger.info(asyncio.run(cf.get_random_contest()))
     # logger.info(cf.contest_finshed_list)
-    pprint.pprint(cf.div1_list)
+    # pprint.pprint(cf.div1_list)
     # get_contest()

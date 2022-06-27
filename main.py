@@ -33,10 +33,10 @@ nc = nc_api.NC()
 
 lc = lc_api.LC()
 
-print(cf.info)
-print(atc.info)
-print(nc.info)
-print(lc.info)
+print(cf.list)
+print(atc.list)
+print(nc.list)
+print(lc.list)
 
 # 读取本地保存的要通知的人和群号，没有自动创建
 if not os.path.exists('friend.txt'):
@@ -59,6 +59,8 @@ f.close()
 # 随机发送图片的准备工作
 pic_qcjj = os.listdir('./pic/qcjj/')
 pic_setu = os.listdir('./pic/setu/')
+pic_bs = os.listdir('./pic/bs/')
+pic_x = os.listdir('./pic/x/')
 
 
 # 保证不随机一遍之后不会出现重复的
@@ -124,35 +126,35 @@ async def query_today_contest():
     mon = datetime.datetime.now().month
     day = datetime.datetime.now().day
 
-    print(cf.info)
-    print(lc.info)
-    print(atc.info)
-    print(nc.info)
-    print(lc.info)
+    print(cf.list)
+    print(lc.list)
+    print(atc.list)
+    print(nc.list)
+    print(lc.list)
 
     # CF
     if time.localtime(cf.begin_time).tm_mon == mon and time.localtime(
             cf.begin_time).tm_mday == day:
         print(1)
-        res += (cf.info + '\n\n')
+        res += (cf.list[0]['contest_info'] + '\n\n')
 
     # ATC
     if time.localtime(atc.begin_time).tm_mon == mon and time.localtime(
             atc.begin_time).tm_mday == day:
         print(2)
-        res += (atc.info + '\n\n')
+        res += (atc.list[0]['contest_info'] + '\n\n')
 
     # NC
     if time.localtime(nc.begin_time).tm_mon == mon and time.localtime(
             nc.begin_time).tm_mday == day:
         print(3)
-        res += (nc.info + '\n\n')
+        res += (nc.list[0]['contest_info'] + '\n\n')
 
     # LC
     if time.localtime(lc.begin_time).tm_mon == mon and time.localtime(
             lc.begin_time).tm_mday == day:
         print(4)
-        res += (lc.info + '\n\n')
+        res += (lc.list[0]['contest_info'] + '\n\n')
 
     print(res)
 
@@ -167,8 +169,8 @@ async def query_next_contest():
     await nc.update_contest()
     await lc.update_contest()
 
-    next_contest = [[cf.info, cf.begin_time], [atc.info, atc.begin_time], [nc.info, nc.begin_time],
-                    [lc.info, lc.begin_time]]
+    next_contest = [[cf.list[0]['contest_info'], cf.begin_time], [atc.list[0]['contest_info'], atc.begin_time], [nc.list, nc.begin_time],
+                    [lc.list, lc.begin_time]]
     next_contest.sort(key=lambda x: x[1])
     return next_contest
 
@@ -225,7 +227,7 @@ if __name__ == '__main__':
                "\ntoday -> 查询今天比赛" \
                "\nnext -> 查询下一场比赛" \
                "\n来只清楚 -> 随机qcjj" \
-               "\n添加清楚->使用qq回复功能选择图片回复发送“添加清楚”" \
+               "\n添加清楚/叉姐->使用qq回复功能选择图片保存到图库" \
                "\n来只yxc -> 随机yxc" \
                "\nsetu/涩图 -> 涩图" \
                "\n添加通知 -> 每天早上会为你发送当日比赛信息哦qwq" \
@@ -277,24 +279,26 @@ if __name__ == '__main__':
     async def query_cf_contest(event: MessageEvent):  # 查询最近比赛
         msg = "".join(map(str, event.message_chain[Plain]))
 
-        # m = re.match(r'cf', msg.strip())
-        #
-        # if m is None:
-        #     m = re.match(r'CF', msg.strip())
-
         if msg.strip().lower() == 'cf':
             global cf
 
             print("查询cf比赛")
 
+            info = ""
+            for i in range(min(3, len(cf.list))):
+                info += cf.list[i]['contest_info'] + '\n'
+
             if int(time.time()) - cf.updated_time < 5:
-                await bot.send(event, cf.info)
+                await bot.send(event, "获取到{}的Codeforces比赛为：\n".format(len(cf.list)) + info)
                 return
 
-            # await bot.send(event, '查询中……')
-            # await asyncio.sleep(1)
             await cf.update_contest()
-            await bot.send(event, cf.info)
+
+            info = ""
+            for i in range(min(3, len(cf.list))):
+                info += cf.list[i]['contest_info'] + '\n'
+
+            await bot.send(event, "获取到{}的Codeforces比赛为：\n".format(len(cf.list)) + info)
 
 
     @bot.on(MessageEvent)
@@ -394,15 +398,20 @@ if __name__ == '__main__':
 
             print("查询atc比赛")
 
+            info = ""
+            for i in range(min(3, len(atc.list))):
+                info += atc.list[i]['contest_info'] + '\n'
+
             if int(time.time()) - atc.updated_time < 5:
-                await bot.send(event, atc.info)
+                await bot.send(event, "获取到{}的AtCoder比赛为：\n".format(len(atc.list)) + info)
                 return
 
-            # await bot.send(event, '查询中……')
-            # await asyncio.sleep(1)
+            info = ""
+            for i in range(min(3, len(atc.list))):
+                info += atc.list[i]['contest_info'] + '\n'
 
             await atc.update_contest()
-            await bot.send(event, atc.info)
+            await bot.send(event, "获取到{}的AtCoder比赛为：\n".format(len(atc.list)) + info)
 
 
     @bot.on(MessageEvent)
@@ -458,14 +467,20 @@ if __name__ == '__main__':
 
             print("查询牛客比赛")
 
+            info = ""
+            for i in range(min(3, len(nc.list))):
+                info += nc.list[i]['contest_info'] + '\n'
+
             if int(time.time()) - nc.updated_time < 5:
-                await bot.send(event, nc.info)
+                await bot.send(event, "获取到{}的牛客比赛为：\n".format(len(cf.list)) + info)
                 return
 
-            # await bot.send(event, '查询中……')
-            # await asyncio.sleep(1)
+            info = ""
+            for i in range(min(3, len(nc.list))):
+                info += nc.list[i]['contest_info'] + '\n'
+
             await nc.update_contest()
-            await bot.send(event, nc.info if nc.info != -1 else "获取比赛时出错，请联系管理员")
+            await bot.send(event, "获取到{}的牛客比赛为：\n".format(len(cf.list)) + info)
 
 
     async def nc_shang_hao():
@@ -492,14 +507,20 @@ if __name__ == '__main__':
 
             global lc
 
+            info = ""
+            for i in range(min(3, len(lc.list))):
+                info += lc.list[i]['contest_info'] + '\n'
+
             if int(time.time()) - lc.updated_time < 5:
-                await bot.send(event, lc.info if lc.info != -1 else "获取比赛时出错，请联系管理员")
+                await bot.send(event, "获取到{}的力扣比赛为：\n".format(len(cf.list)) + info)
                 return
 
-            # await bot.send(event, '查询中……')
-            # await asyncio.sleep(1)
+            info = ""
+            for i in range(min(3, len(lc.list))):
+                info += lc.list[i]['contest_info'] + '\n'
+
             await lc.update_contest()
-            await bot.send(event, lc.info if lc.info != -1 else "获取比赛时出错，请联系管理员")
+            await bot.send(event, "获取到{}的力扣比赛为：\n".format(len(cf.list)) + info)
 
 
     # other
@@ -559,13 +580,12 @@ if __name__ == '__main__':
 
 
     # 随机图片功能
-
     @bot.on(MessageEvent)
     async def add_image(event: MessageEvent):
         global pic_qcjj
         msg = "".join(map(str, event.message_chain[Plain]))
         if msg.strip() == '添加清楚':
-            if event.sender.id == 2454256424 or event.sender.group.id in [601621184, 839594887, 874149706, 215516112]:
+            if event.sender.group.id in [601621184, 839594887, 874149706, 215516112]:
                 quotes = event.message_chain[Quote]
                 for quote in quotes:
                     message: MessageFromIdResponse = await bot.message_from_id(quote.id)
@@ -666,6 +686,84 @@ if __name__ == '__main__':
             await bot.send(event, message_chain)
 
 
+    # 来只bs（提高二群功能）
+    @bot.on(MessageEvent)
+    async def bs_query(event: MessageEvent):
+        # 从消息链中取出文本
+        msg = "".join(map(str, event.message_chain[Plain]))
+        # 匹配指令
+        m = re.match(r'来只bs', msg.strip().lower())
+        if m:
+            print("bs")
+            img_list = os.listdir('./pic/bs/')
+            img_local = './pic/bs/' + random.choice(img_list)
+            print(img_local)
+            message_chain = MessageChain([
+                await Image.from_local(img_local)
+            ])
+            await bot.send(event, message_chain)
+
+
+    @bot.on(MessageEvent)
+    async def add_image(event: MessageEvent):
+        msg = "".join(map(str, event.message_chain[Plain]))
+        if msg.strip() == '添加bs':
+            if event.sender.group.id in [601621184, 839594887, 874149706, 215516112]:
+                quotes = event.message_chain[Quote]
+                for quote in quotes:
+                    message: MessageFromIdResponse = await bot.message_from_id(quote.id)
+                    images = message.data.message_chain[Image]
+                    for image in images:
+                        all_img_bs = os.listdir('./pic/bs/')
+                        suffix = image.image_id.split('.')[1]
+                        id_bs = str(len(all_img_bs) + 1) + '.' + suffix
+                        filename_bs = './pic/bs/' + id_bs
+                        await image.download(filename_bs, None, False)
+                        print("添加bs成功")
+                        await bot.send(event, '添加成功！')
+            else:
+                await bot.send(event, "本群暂无权限，请联系管理员！")
+
+
+    # 来只叉姐
+    @bot.on(MessageEvent)
+    async def x_query(event: MessageEvent):
+        # 从消息链中取出文本
+        msg = "".join(map(str, event.message_chain[Plain]))
+        # 匹配指令
+        m = re.match(r'来只叉姐', msg.strip().lower())
+        if m:
+            print("x")
+            img_list = os.listdir('./pic/x/')
+            img_local = './pic/x/' + random.choice(img_list)
+            print(img_local)
+            message_chain = MessageChain([
+                await Image.from_local(img_local)
+            ])
+            await bot.send(event, message_chain)
+
+    # 添加叉姐
+    @bot.on(MessageEvent)
+    async def add_image(event: MessageEvent):
+        msg = "".join(map(str, event.message_chain[Plain]))
+        if msg.strip() == '添加叉姐':
+            if event.sender.group.id in [601621184, 839594887, 874149706, 215516112]:
+                quotes = event.message_chain[Quote]
+                for quote in quotes:
+                    message: MessageFromIdResponse = await bot.message_from_id(quote.id)
+                    images = message.data.message_chain[Image]
+                    for image in images:
+                        all_img_x = os.listdir('./pic/x/')
+                        suffix = image.image_id.split('.')[1]
+                        id_x = str(len(all_img_x) + 1) + '.' + suffix
+                        filename_x = './pic/x/' + id_x
+                        await image.download(filename_x, None, False)
+                        print("添加叉姐成功")
+                        await bot.send(event, '添加成功！')
+            else:
+                await bot.send(event, "本群暂无权限，请联系管理员！")
+
+
     # 来只管哥哥（限于qfnu功能）
     @bot.on(MessageEvent)
     async def ggg_query(event: MessageEvent):
@@ -700,11 +798,7 @@ if __name__ == '__main__':
     # daily
     async def update_contest_info():
         async def update(oj):
-            while True:
-                await oj.update_contest(flag=1)
-                if oj.info != -1:
-                    await asyncio.sleep(5)  # 休息5s
-                    break
+            await oj.update_contest(flag=1)
 
         now = time.localtime()
         print()
@@ -835,9 +929,9 @@ if __name__ == '__main__':
         # 启动所有的定时任务
         scheduler.add_job(daily_qfnu_daka, CronTrigger(hour=8, timezone='Asia/Shanghai'),
                           misfire_grace_time=60)
-        await sche_add(cf_shang_hao, cf.note_time)
-        await sche_add(cf_xia_hao, cf.end_time)
-        await sche_add(nc_shang_hao, nc.note_time)
+        await sche_add(cf_shang_hao, cf.get_note_time())
+        await sche_add(cf_xia_hao, cf.get_note_time())
+        await sche_add(nc_shang_hao, nc.get_note_time())
 
 
     # debug
