@@ -11,7 +11,7 @@ from mirai.models.api import MessageFromIdResponse
 
 import mirai
 from log import Log
-from other_operation import random_qcjj, qfnu_daka
+from other_operation import qfnu_daka
 from oj_api import cf_api, atc_api, lc_api, nc_api, Contest
 from mirai.models import NewFriendRequestEvent, BotInvitedJoinGroupRequestEvent, Quote
 from mirai import Startup, Shutdown, MessageEvent
@@ -59,8 +59,6 @@ f.close()
 # 随机发送图片的准备工作
 pic_qcjj = os.listdir('./pic/qcjj/')
 pic_setu = os.listdir('./pic/setu/')
-pic_bs = os.listdir('./pic/bs/')
-pic_x = os.listdir('./pic/x/')
 
 
 # 保证不随机一遍之后不会出现重复的
@@ -169,15 +167,15 @@ async def query_next_contest():
     await nc.update_contest()
     await lc.update_contest()
 
-    next_contest = [[cf.list[0]['contest_info'], cf.begin_time], [atc.list[0]['contest_info'], atc.begin_time], [nc.list, nc.begin_time],
-                    [lc.list, lc.begin_time]]
+    next_contest = [[cf.list[0]['contest_info'], cf.begin_time], [atc.list[0]['contest_info'], atc.begin_time], [nc.list[0]['contest_info'], nc.begin_time],
+                    [lc.list[0]['contest_info'], lc.begin_time]]
     next_contest.sort(key=lambda x: x[1])
     return next_contest
 
 
 if __name__ == '__main__':
     bot = Mirai(
-        qq=3636153064,  # 改成你的机器人的 QQ 号
+        qq=3121109513,  # 改成你的机器人的 QQ 号
         adapter=WebSocketAdapter(
             verify_key='yirimirai', host='localhost', port=8080
         )
@@ -289,7 +287,7 @@ if __name__ == '__main__':
                 info += cf.list[i]['contest_info'] + '\n'
 
             if int(time.time()) - cf.updated_time < 5:
-                await bot.send(event, "获取到{}的Codeforces比赛为：\n".format(len(cf.list)) + info)
+                await bot.send(event, "找到最近的{}场的Codeforces比赛为：\n".format(min(3, len(cf.list))) + info)
                 return
 
             await cf.update_contest()
@@ -298,7 +296,7 @@ if __name__ == '__main__':
             for i in range(min(3, len(cf.list))):
                 info += cf.list[i]['contest_info'] + '\n'
 
-            await bot.send(event, "获取到{}的Codeforces比赛为：\n".format(len(cf.list)) + info)
+            await bot.send(event, "找到最近的{}场的Codeforces比赛为：\n".format(min(3, len(cf.list))) + info)
 
 
     @bot.on(MessageEvent)
@@ -403,7 +401,7 @@ if __name__ == '__main__':
                 info += atc.list[i]['contest_info'] + '\n'
 
             if int(time.time()) - atc.updated_time < 5:
-                await bot.send(event, "获取到{}的AtCoder比赛为：\n".format(len(atc.list)) + info)
+                await bot.send(event, "找到最近的{}场的AtCoder比赛为：\n".format(min(3, len(atc.list))) + info)
                 return
 
             info = ""
@@ -411,7 +409,7 @@ if __name__ == '__main__':
                 info += atc.list[i]['contest_info'] + '\n'
 
             await atc.update_contest()
-            await bot.send(event, "获取到{}的AtCoder比赛为：\n".format(len(atc.list)) + info)
+            await bot.send(event, "找到最近的{}场的AtCoder比赛为：\n".format(min(3, len(atc.list))) + info)
 
 
     @bot.on(MessageEvent)
@@ -472,7 +470,7 @@ if __name__ == '__main__':
                 info += nc.list[i]['contest_info'] + '\n'
 
             if int(time.time()) - nc.updated_time < 5:
-                await bot.send(event, "获取到{}的牛客比赛为：\n".format(len(cf.list)) + info)
+                await bot.send(event, "找到最近的{}场的牛客比赛为：\n".format(min(3, len(nc.list))) + info)
                 return
 
             info = ""
@@ -480,7 +478,7 @@ if __name__ == '__main__':
                 info += nc.list[i]['contest_info'] + '\n'
 
             await nc.update_contest()
-            await bot.send(event, "获取到{}的牛客比赛为：\n".format(len(cf.list)) + info)
+            await bot.send(event, "找到最近的{}场的牛客比赛为：\n".format(min(3, len(nc.list))) + info)
 
 
     async def nc_shang_hao():
@@ -512,7 +510,7 @@ if __name__ == '__main__':
                 info += lc.list[i]['contest_info'] + '\n'
 
             if int(time.time()) - lc.updated_time < 5:
-                await bot.send(event, "获取到{}的力扣比赛为：\n".format(len(cf.list)) + info)
+                await bot.send(event, "找到最近的{}场的力扣比赛为：\n".format(min(3, len(lc.list))) + info)
                 return
 
             info = ""
@@ -520,7 +518,7 @@ if __name__ == '__main__':
                 info += lc.list[i]['contest_info'] + '\n'
 
             await lc.update_contest()
-            await bot.send(event, "获取到{}的力扣比赛为：\n".format(len(cf.list)) + info)
+            await bot.send(event, "找到最近的{}场的力扣比赛为：\n".format(min(3, len(lc.list))) + info)
 
 
     # other
