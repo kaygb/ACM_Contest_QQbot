@@ -1,10 +1,12 @@
 感谢大佬：
-* [guke1024](https://github.com/guke1024)帮我一起完善这个项目qwq
+* 特别感谢[guke1024](https://github.com/guke1024)帮我一起完善这个项目qwq
 * [CodeCat](https://github.com/CodeCat-maker)帮我一起完善这个项目qwq
 * [neal](https://github.com/neal2018)帮我一起完善这个项目qwq
 
 ### 公告
-当前版本的lc和nc的比赛通知还未重构完成，暂两者不可用
+可以看一下guke1024根据本项目进行扩充的项目：https://github.com/guke1024/ACM_QQbot
+
+现正处于进行数据库整合的开发，但由于号被封了，所以更新暂时搁置了
 
 ### 项目介绍
 本项目是一个在群里可以通知打cf的机器人项目，以及通知或者查询其他比赛的通知机器人，如果您觉得项目写的不错可以点一下右上角的✨`Star`，谢谢啦
