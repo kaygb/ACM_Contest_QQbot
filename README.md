@@ -40,24 +40,13 @@
 
 还在计划中的功能：
 * 补充代码注释
-* 多场比赛存储
 * 通过CF的round号来找到对应网址
 * 洛谷相关功能
   * （还没想好）
-* 通过qq添加qcjj图片
-* 完善反爬措施以适应大群请求（将请求本地化）
-* ~~✨根据比赛安排生成ics文件并提供下载，以便自动将日程加载到电脑日历中~~ （api不支持对用户发文件，该计划暂时搁置）
 * ...
 
 目前已知bug：
-* atc与lc的比赛获取会有概率获取失败，~~目前原因不明~~
-  * 已解决，更新Mirai即可
-* 计时器（定时器）有未知问题，不稳定
-  * 导致cf上号提醒可能会有点问题
-  * 运行时间越长概率越高
-  * 已有解决方案，忙于比赛还未完成
-* 如果cfapi超时/关闭，由于更新逻辑是检查所有的oj信息是否需要更新，会导致部分查询功能失效
-  * 目前已有解决方法：多保存几个比赛，采用队列顺延（还未实现）
+* 暂无，上版本bug全已修复
 
 ### 接口调用
 本项目基于Python3.8.10为主要开发版本，以[YiriMirai](https://github.com/YiriMiraiProject/YiriMirai) 为主要依赖库
@@ -67,12 +56,13 @@
 1. 环境配置
    * 请参照YiriMirai的教程环境配置：https://yiri-mirai.wybxc.cc/tutorials/01/configuration
    * 建议更新Mirai到最新版本，使用命令`./mcl -u`
-2. 使用Mirai登陆qq（如果是linux服务器，参照官网教程，如何挂起而不退出：https://yiri-mirai.wybxc.cc/tutorials/02/linux）
-3. clone到本地或者服务器中
+2. 使用Mirai登陆qq https://yiri-mirai.wybxc.cc/tutorials/01/configuration#4-%E7%99%BB%E5%BD%95-qq
+3. 挂起服务（如果是linux服务器，参照官网教程，如何挂起而不退出：https://yiri-mirai.wybxc.cc/tutorials/02/linux）
+4. ~~clone~~到本地或者服务器中（请直接下载源码，原因请看公告）
 ~~~shell
 git clone git@github.com:INGg/ACM_Contest_QQbot.git
 ~~~
-3. 修改`main.py`中bot的qq号为你自己的qq号
+5. 修改`main.py`中bot的qq号为你自己的qq号
 ~~~python
 bot = Mirai(
     qq=*****,  # 改成你的机器人的 QQ 号
@@ -82,7 +72,7 @@ bot = Mirai(
 )
 hdc = HandlerControl(bot)  # 事件接收器
 ~~~
-4. 安装对应的库
+6. 安装对应的库
 ~~~shell
 pip3 install httpx
 pip3 install yiri-mirai
@@ -95,7 +85,7 @@ pip3 install loguru
 # 应该是全了qwq，如果不全请根据报错来安装相应的包，如果方便请您告知我，我将更新安装命令
 ~~~
 
-5. 启动bot
+7. 启动bot
 ~~~shell
 python3 main.py
 # 或 python main.py
