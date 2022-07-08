@@ -15,7 +15,7 @@ from apscheduler.triggers.cron import CronTrigger
 from mirai.models.api import MessageFromIdResponse
 from mirai_extensions.trigger import HandlerControl, Filter
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from oj_api import cf_api, atc_api, lc_api, nc_api, Contest
+from oj_api import cf_api, atc_api, lc_api, nc_api
 from mirai.models import NewFriendRequestEvent, BotInvitedJoinGroupRequestEvent, Quote
 from mirai import Mirai, WebSocketAdapter, FriendMessage, GroupMessage, At, Plain, MessageChain, Image
 
@@ -163,7 +163,7 @@ async def query_next_contest():
 
 if __name__ == '__main__':
     bot = Mirai(
-        qq=3121109513,  # 改成你的机器人的 QQ 号
+        qq=3409201437,  # 改成你的机器人的 QQ 号
         adapter=WebSocketAdapter(
             verify_key='yirimirai', host='localhost', port=8080
         )
@@ -458,6 +458,8 @@ if __name__ == '__main__':
             await bot.send(event, "找到最近的{}场的牛客比赛为：\n".format(min(3, len(nc.list))) + info)
 
     async def nc_shang_hao():
+        with open('noti.json', 'r') as f:
+            _, GROUPS = json.load(f).values()
         message_chain = MessageChain([
             await Image.from_local('pic/up_nc.png')
         ])
