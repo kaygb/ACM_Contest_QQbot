@@ -210,8 +210,8 @@ if __name__ == '__main__':
                "\n添加清楚/叉姐->使用qq回复功能选择图片保存到图库" \
                "\n来只yxc -> 随机yxc" \
                "\nsetu/涩图 -> 涩图" \
-               "\n添加通知 -> 每天早上会为你发送当日比赛信息哦qwq" \
-               "\n删除通知 -> 就是不再提醒你了" \
+               "\n开启通知 -> 每天早上会为你发送当日比赛信息哦qwq" \
+               "\n关闭通知 -> 就是不再提醒你了" \
                "\nbug联系 -> 1095490883" \
                "\n项目地址 -> 获取项目地址" \
                "\nps:所有的功能私聊均可用哦，加好友自动通过申请，然后可以邀请到自己的群里哦~"
@@ -315,42 +315,46 @@ if __name__ == '__main__':
             await bot.send(event, _hack[1])
 
     async def cf_shang_hao():
+        with open('noti.json', 'r') as f:
+            Friends, Groups = json.load(f).values()
+
         message_chain = MessageChain([
             await Image.from_local('pic/up_cf.jpg')
         ])
-        for friend in FRIENDS:
+        for friend in Friends:
             try:
                 await asyncio.sleep(0.2)  # 减缓发送速度，降低疯狂的可能性
                 await bot.send_friend_message(friend, message_chain)  # 发送个人
             except:
                 print("不存在qq号为 {} 的好友".format(friend))
 
-        for group in GROUPS:
+        for group in Groups:
             try:
                 await asyncio.sleep(0.2)
                 await bot.send_group_message(group, message_chain)  # 发送群组
             except:
                 print("不存在群号为 {} 的群组".format(group))
-        # await bot.send_group_message(763537993, message_chain)  # 874149706测试号
 
     async def cf_xia_hao():
+        with open('noti.json', 'r') as f:
+            Friends, Groups = json.load(f).values()
+
         message_chain = MessageChain([
             await Image.from_local('pic/down_cf.jpg')
         ])
-        for friend in FRIENDS:
+        for friend in Friends:
             try:
                 await asyncio.sleep(0.2)
                 await bot.send_friend_message(friend, message_chain)  # 发送个人
             except:
                 print("不存在qq号为 {} 的好友".format(friend))
 
-        for group in GROUPS:
+        for group in Groups:
             try:
                 await asyncio.sleep(0.2)
                 await bot.send_group_message(group, message_chain)  # 发送群组
             except:
                 print("不存在群号为 {} 的群组".format(group))
-        # await bot.send_group_message(763537993, message_chain)  # 874149706测试号
 
         global cf  # 比完接着更新
         await cf.update_contest()
