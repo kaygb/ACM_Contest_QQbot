@@ -2,6 +2,7 @@
 * 特别感谢[guke1024](https://github.com/guke1024)帮我一起完善这个项目qwq
 * [CodeCat](https://github.com/CodeCat-maker)帮我一起完善这个项目qwq
 * [neal](https://github.com/neal2018)帮我一起完善这个项目qwq
+* [SirlyDreamer](https://github.com/SirlyDreamer)帮我一起完善这个项目qwq
 
 ## 公告
 可以看一下guke1024根据本项目进行扩充的项目：https://github.com/guke1024/ACM_QQbot
