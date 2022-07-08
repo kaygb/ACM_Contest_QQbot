@@ -48,7 +48,7 @@ class NC(Contest):
                                     "{}小时{:02d}分钟".format(during_time // 3600, during_time % 3600 // 60),
                                     contest['link'][:-18]
                                 ),
-                                'begin_time': contest['startTime'],
+                                'begin_time': contest['startTime'] // 1000,
                                 'during_time': during_time,
                             })
 
