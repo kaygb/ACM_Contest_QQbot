@@ -820,7 +820,7 @@ if __name__ == '__main__':
                         print("添加个人通知：{}".format(qq_id))
                         await bot.send(event, '开启成功，来和我一起每天一百道题吧~')
                     else:
-                        await bot.send(event, '已经开启过啦~认真刷题的孩子有红黑名上~')
+                        await bot.send(event, '已经开启过啦~认真刷题的孩子有黑红名上~')
             except:
                 await bot.send(event, '开启通知失败இ௰இ')
 
@@ -860,21 +860,22 @@ if __name__ == '__main__':
 
     async def notify_contest_info():
         res = await query_today_contest()
-
+        with open('noti.json', 'r') as f:
+            Friends, Groups = json.load(f).values()
         # friends = ['1095490883', '942845546', '2442530380', '601621184']
         # groups = ['687601411', '763537993']
 
         if res != '':
             # 发送当日信息
             msg = "早上好呀！今日的比赛有：\n\n" + res.strip()
-            for friend in FRIENDS:
+            for friend in Friends:
                 try:
                     await asyncio.sleep(0.2)
                     await bot.send_friend_message(friend, msg)  # 发送个人
                 except:
                     print("不存在qq号为 {} 的好友".format(friend))
 
-            for group in GROUPS:
+            for group in Groups:
                 try:
                     await asyncio.sleep(0.2)
                     await bot.send_group_message(group, msg)  # 发送群组
@@ -929,15 +930,17 @@ if __name__ == '__main__':
 
     @hdc.on(filter_)
     async def handler(event: FriendMessage, payload: str):
+        with open('noti.json', 'r') as f:
+            Friends, Groups = json.load(f).values()
         global cf
         # cf.begin_time = int(time.time())
         # cf.during_time = 60
         if payload == "cf":
             await cf.update_contest(flag=1)
         if payload == 'friend':
-            await bot.send(event, str(FRIENDS))
+            await bot.send(event, str(Friends))
         if payload == 'group':
-            await bot.send(event, str(GROUPS))
+            await bot.send(event, str(Groups))
         await bot.send(event, f'命令 {payload} 执行成功。')
 
     bot.run()
