@@ -916,7 +916,7 @@ if __name__ == '__main__':
         scheduler.add_job(daily_qfnu_daka, CronTrigger(hour=8, timezone='Asia/Shanghai'),
                           misfire_grace_time=60)
         await sche_add(cf_shang_hao, cf.get_note_time())
-        await sche_add(cf_xia_hao, cf.get_note_time())
+        await sche_add(cf_xia_hao, cf.get_end_time())
         await sche_add(nc_shang_hao, nc.get_note_time())
 
     # debug
