@@ -80,6 +80,7 @@ pip3 install requests
 pip3 install lxml
 pip3 install apscheduler
 pip3 install loguru
+pip3 install hypercorn
 # 应该是全了qwq，如果不全请根据报错来安装相应的包，如果方便请您告知我，我将更新安装命令
 ~~~
 
