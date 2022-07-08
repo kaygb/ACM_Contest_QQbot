@@ -1,0 +1,9 @@
+lxml
+httpx
+loguru
+requests
+hypercorn
+yiri-mirai
+apscheduler
+python-dateutil
+yiri-mirai-trigger
