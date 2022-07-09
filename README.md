@@ -62,6 +62,7 @@
 3. 挂起服务（如果是linux服务器，参照官网教程，如何挂起而不退出：https://yiri-mirai.wybxc.cc/tutorials/02/linux）
 
 4. clone到本地或者服务器中（不要直接下载源码，如果网速慢请挂梯子）
+
 注意：本仓库使用了LFS，可能需要额外安装 `git-lfs`，否则图片clone下来并不是图片，随机清楚等功能会产生异常
 ~~~shell
 sudo apt install git-lfs
