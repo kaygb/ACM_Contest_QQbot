@@ -7,7 +7,9 @@
 ## 公告
 可以看一下guke1024根据本项目进行扩充的项目：https://github.com/guke1024/ACM_QQbot
 
-直接clone项目可能会很难克隆，因为我在第一版上传的时候把mirai放入git然后传进github上了，如果想二次开发或者fork后，最好直接选择下载源码zip来下载~~（才不是我没研究明白删记录不想删）~~
+~~直接clone项目可能会很难克隆，因为我在第一版上传的时候把mirai放入git然后传进github上了，如果想二次开发或者fork后，最好直接选择下载源码zip来下载（才不是我没研究明白删记录不想删）~~
+
+由于本项目使用了LFS，只能通过git lfs clone的方式下载仓库，否则图片会出问题qwq ~~已经在push作者删除之前的mirai记录了~~
 
 ### 项目介绍
 本项目是一个在群里可以通知打cf的机器人项目，以及通知或者查询其他比赛的通知机器人，如果您觉得项目写的不错可以点一下右上角的✨`Star`，谢谢啦
@@ -40,7 +42,8 @@
 * 补充代码注释
 * 通过CF的round号来找到对应网址
 * 洛谷相关功能
-  * （还没想好）
+  * （还没想好)
+* 比赛倒计时功能
 * ...
 
 目前已知bug：
@@ -54,12 +57,19 @@
 1. 环境配置
    * 请参照YiriMirai的教程环境配置：https://yiri-mirai.wybxc.cc/tutorials/01/configuration
    * 建议更新Mirai到最新版本，使用命令`./mcl -u`
+
 2. 使用Mirai登陆qq https://yiri-mirai.wybxc.cc/tutorials/01/configuration#4-%E7%99%BB%E5%BD%95-qq
+
 3. 挂起服务（如果是linux服务器，参照官网教程，如何挂起而不退出：https://yiri-mirai.wybxc.cc/tutorials/02/linux）
-4. ~~clone~~到本地或者服务器中（请直接下载源码，原因请看公告）
+
+4. clone到本地或者服务器中（不要直接下载源码，如果网速慢请挂梯子）
+
+注意：本仓库使用了LFS，可能需要额外安装 `git-lfs`，否则图片clone下来并不是图片，随机清楚等功能会产生异常
 ~~~shell
-git clone git@github.com:INGg/ACM_Contest_QQbot.git
+sudo apt install git-lfs
+git clone https://github.com/INGg/ACM_Contest_QQbot.git
 ~~~
+
 5. 修改`main.py`中bot的qq号为你自己的qq号
 ~~~python
 bot = Mirai(
@@ -70,17 +80,10 @@ bot = Mirai(
 )
 hdc = HandlerControl(bot)  # 事件接收器
 ~~~
+
 6. 安装对应的库
 ~~~shell
-pip3 install httpx
-pip3 install yiri-mirai
-pip3 install python-dateutil
-pip3 install yiri-mirai-trigger
-pip3 install requests
-pip3 install lxml
-pip3 install apscheduler
-pip3 install loguru
-pip3 install hypercorn
+pip3 install -r ./requirements.txt
 # 应该是全了qwq，如果不全请根据报错来安装相应的包，如果方便请您告知我，我将更新安装命令
 ~~~
 
@@ -88,4 +91,5 @@ pip3 install hypercorn
 ~~~shell
 python3 main.py
 # 或 python main.py
+# 自己编译安装python3.8的 python3.8 main.py
 ~~~
