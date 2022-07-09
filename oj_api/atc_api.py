@@ -31,6 +31,7 @@ class ATC(Contest):
             # print(h5.xpath(count_xpath))
             count = h5.xpath(count_xpath)
 
+            # 获取当前界面展示了多少比赛信息
             count = int(count)
 
             res = []
@@ -83,13 +84,8 @@ class ATC(Contest):
 
             return res, res[0]['begin_time'], res[0]['during_time']
         except:
-            return [
-                       {
-                           "contest_info": "最近没有比赛~",
-                           'begin_time': NO_CONTEST,
-                           'during_time': NO_CONTEST,
-                       }
-                   ], NO_CONTEST, NO_CONTEST
+            # 如果请求失败就判断时候应当更换比赛信息
+            return self.get_next_contest()
 
     async def get_rating(self, name):  # 返回一个列表，如果不存在用户则是空列表
         url = self.HOST + self.PATH["userRating"] + name

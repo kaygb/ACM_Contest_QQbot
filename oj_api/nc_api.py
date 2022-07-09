@@ -53,18 +53,11 @@ class NC(Contest):
                             })
 
                             if len(res) > 4:  # 多获取一些，若oj长时间崩溃可以有更多的比赛信息轮换
-                                return res, res[0]['begin_time'], res[0]['during_time']
-        except:
-            if len(res) == 0:  # 如果一个都没获取到
-                return [
-                           {
-                               "contest_info": "最近没有比赛~",
-                               'begin_time': NO_CONTEST,
-                               'during_time': NO_CONTEST,
-                           }
-                       ], NO_CONTEST, NO_CONTEST
-            else:
+                                break
                 return res, res[0]['begin_time'], res[0]['during_time']
+        except:
+            # 如果请求失败就判断时候应当更换比赛信息
+            return self.get_next_contest()
 
     async def get_rating(self, name):
         data = {

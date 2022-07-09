@@ -74,13 +74,8 @@ class LC(Contest):
             res.sort(key=lambda x: x['begin_time'], reverse=False)
             return res, res[0]['begin_time'], res[0]['during_time']
         except:
-            return [
-                       {
-                           "contest_info": "最近没有比赛~",
-                           'begin_time': NO_CONTEST,
-                           'during_time': NO_CONTEST,
-                       }
-                   ], NO_CONTEST, NO_CONTEST
+            # 如果请求失败就判断时候应当更换比赛信息
+            return self.get_next_contest()
 
     # TODO 获取力扣分数
     async def get_rating(self, name):

@@ -21,8 +21,8 @@ class Contest(metaclass=abc.ABCMeta):
         return self.begin_time + self.during_time
 
     async def update_contest(self, flag=0):  # flag=1代表强制更新
-        # 在要求强制更新或者超过上次跟新两个小时后或者上一场已经结束
-        if int(time.time()) - self.updated_time >= 2 * 3600 or int(
+        # 在要求强制更新或者超过上次跟新九个小时后或者上一场已经结束，与main文件中的定时器刷新函数要求的一致
+        if int(time.time()) - self.updated_time >= 9 * 3600 or int(
                 time.time()) >= self.begin_time + self.during_time or flag == 1:
             self.updated_time = int(time.time())
             self.list, self.begin_time, self.during_time = await self.get_contest()
@@ -41,3 +41,20 @@ class Contest(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     async def get_rating(self, name):
         pass
+
+    async def get_next_contest(self):
+        # 如果请求失败就判断时候应当更换比赛信息
+        if time.time() > self.get_end_time():
+            if len(self.list) > 0:
+                del (self.list[0])
+                return self.list, self.list[0]['begin_time'], self.list[0]['during_time']
+            else:
+                return [
+                           {
+                               "contest_info": "最近没有比赛~",
+                               'begin_time': NO_CONTEST,
+                               'during_time': NO_CONTEST,
+                           }
+                       ], NO_CONTEST, NO_CONTEST
+        else:
+            return self.list, self.list[0]['begin_time'], self.list[0]['during_time']

@@ -79,20 +79,7 @@ class CF(Contest):
             json_data = httpx.get(url, params=data).json()
         except:
             # 如果请求失败就判断时候应当更换比赛信息
-            if time.time() > self.get_end_time():
-                if len(self.list) > 0:
-                    del (self.list[0])
-                    return self.list, self.list[0]['begin_time'], self.list[0]['during_time']
-                else:
-                    return [
-                               {
-                                   "contest_info": "最近没有比赛~",
-                                   'begin_time': NO_CONTEST,
-                                   'during_time': NO_CONTEST,
-                               }
-                           ], NO_CONTEST, NO_CONTEST
-            else:
-                return self.list, self.list[0]['begin_time'], self.list[0]['during_time']
+            return self.get_next_contest()
 
         if json_data['status'] == "OK":
             contest_list_all = list(json_data['result'])
