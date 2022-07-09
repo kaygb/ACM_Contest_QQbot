@@ -42,7 +42,8 @@
 * 补充代码注释
 * 通过CF的round号来找到对应网址
 * 洛谷相关功能
-  * （还没想好）
+  * （还没想好)
+* 比赛倒计时功能
 * ...
 
 目前已知bug：
@@ -66,7 +67,7 @@
 注意：本仓库使用了LFS，可能需要额外安装 `git-lfs`，否则图片clone下来并不是图片，随机清楚等功能会产生异常
 ~~~shell
 sudo apt install git-lfs
-git lfs clone git@github.com:INGg/ACM_Contest_QQbot.git
+git clone https://github.com/INGg/ACM_Contest_QQbot.git
 ~~~
 
 5. 修改`main.py`中bot的qq号为你自己的qq号
