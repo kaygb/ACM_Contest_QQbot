@@ -1,4 +1,5 @@
 import os
+import pprint
 import re
 import sys
 import time
@@ -10,6 +11,7 @@ import asyncio
 import hashlib
 import datetime
 from log import Log
+from oj_api.Contest import NO_CONTEST
 from other_operation import qfnu_daka
 from mirai import Startup, Shutdown, MessageEvent
 from apscheduler.triggers.cron import CronTrigger
@@ -184,16 +186,19 @@ async def query_today_contest():
 
 
 async def query_next_contest():
-    global cf, atc, nc, lc
-    # 看看需不需要更新
-    await cf.update_contest()
-    await atc.update_contest()
-    await nc.update_contest()
-    await lc.update_contest()
+    # global cf, atc, nc, lc
+    # # 看看需不需要更新
+    # await cf.update_contest()
+    # await atc.update_contest()
+    # await nc.update_contest()
+    # await lc.update_contest()
 
     next_contest = [[cf.list[0]['contest_info'], cf.begin_time], [atc.list[0]['contest_info'], atc.begin_time],
                     [nc.list[0]['contest_info'], nc.begin_time],
-                    [lc.list[0]['contest_info'], lc.begin_time]].sort(key=lambda x: x[1])
+                    [lc.list[0]['contest_info'], lc.begin_time]]
+
+    next_contest.sort(key=lambda x: x[1])
+
     return next_contest
 
 
@@ -733,7 +738,7 @@ if __name__ == '__main__':
 
         if msg.strip().lower() == 'next':
             contest = await query_next_contest()
-            if contest[0][1] != 0:
+            if contest[0][1] != NO_CONTEST:
                 res = '找到最近的 1 场比赛如下：\n\n' + contest[0][0]
                 await bot.send(event, res)
             else:
