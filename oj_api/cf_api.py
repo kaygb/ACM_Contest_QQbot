@@ -141,28 +141,43 @@ class CF(Contest):
             contest_list_all = list(json_data['result'])
             for contest in contest_list_all:
 
+                all_contest_list = []
+                edu_list = []
+                div1_list = []
+                div2_list = []
+                div3_list = []
+                div4_list = []
+
                 if (contest['type'] == 'CF' or contest['type'] == 'ICPC') and 'Codeforces' in contest[
                     'name']:  # 筛选edu，不带时间
                     if 'Educational Codeforces Round' in contest['name']:
-                        self.edu_list.append(contest)
+                        edu_list.append(contest)
 
                 if contest['relativeTimeSeconds'] > 0 and int(
                         time.time()) - 3 * 365 * 24 * 3600 <= contest['startTimeSeconds'] <= int(
                     time.time()) - 180 * 24 * 3600:  # 3年前到180天前
                     if (contest['type'] == 'CF' or contest['type'] == 'ICPC') and 'Codeforces' in contest[
                         'name']:  # 筛选常规的
-                        self.all_contest_list.append(contest)
+                        all_contest_list.append(contest)
                         if 'Div. 3' in contest['name']:
-                            self.div3_list.append(contest)
+                            div3_list.append(contest)
                         elif 'Div. 1 + Div. 2' in contest['name']:
-                            self.div1_list.append(contest)
-                            self.div2_list.append(contest)
+                            div1_list.append(contest)
+                            div2_list.append(contest)
                         elif 'Div. 2' in contest['name']:
-                            self.div2_list.append(contest)
+                            div2_list.append(contest)
                         elif 'Div. 1' in contest['name']:
-                            self.div1_list.append(contest)
+                            div1_list.append(contest)
                         elif 'Div. 4' in contest['name']:
-                            self.div4_list.append(contest)
+                            div4_list.append(contest)
+
+                self.all_contest_list = all_contest_list
+                self.edu_list = edu_list
+                self.div1_list = div1_list
+                self.div2_list = div2_list
+                self.div3_list = div3_list
+                self.div4_list = div4_list
+
 
     async def get_random_contest(self, type='normal'):
         if type == 'normal':

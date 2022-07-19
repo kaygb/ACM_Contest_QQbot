@@ -132,7 +132,7 @@ async def query_now_weather(city: str) -> str:
                 'language': 'zh-Hans',
                 'unit': 'c',
             })
-            time.sleep(0.5)
+            await asyncio.sleep(30)
             resp.raise_for_status()
             data = resp.json()
             return f'当前{data["results"][0]["location"]["name"]}天气为' \
@@ -222,15 +222,15 @@ if __name__ == '__main__':
         scheduler.shutdown(True)  # 结束定时器
 
 
-    @bot.on(NewFriendRequestEvent)
-    async def allow_request_friend(event: NewFriendRequestEvent):  # 有新用户好友申请就自动通过
-        await bot.allow(event)
+    # @bot.on(NewFriendRequestEvent)
+    # async def allow_request_friend(event: NewFriendRequestEvent):  # 有新用户好友申请就自动通过
+    #     await bot.allow(event)
 
 
-    @bot.on(BotInvitedJoinGroupRequestEvent)
-    # 被邀请进群自动通过
-    async def allow_request_invite_group(event: BotInvitedJoinGroupRequestEvent):
-        await bot.allow(event)
+    # @bot.on(BotInvitedJoinGroupRequestEvent)
+    # # 被邀请进群自动通过
+    # async def allow_request_invite_group(event: BotInvitedJoinGroupRequestEvent):
+    #     await bot.allow(event)
 
 
     @bot.on(MessageEvent)
@@ -260,9 +260,9 @@ if __name__ == '__main__':
                "\nsetu/涩图 -> 涩图" \
                "\n开启通知 -> 每天早上会为你发送当日比赛信息哦qwq" \
                "\n关闭通知 -> 就是不再提醒你了" \
-               "\nbug联系 -> 1095490883" \
+               "\nbug联系 -> qq:1095490883" \
                "\n项目地址 -> 获取项目地址" \
-               "\nps:所有的功能私聊均可用哦，加好友自动通过申请，然后可以邀请到自己的群里哦~"
+               # "\nps:所有的功能私聊均可用哦，加好友自动通过申请，然后可以邀请到自己的群里哦~"
 
         if msg == ".help":
             if isinstance(event, GroupMessage):
@@ -320,8 +320,6 @@ if __name__ == '__main__':
                 await bot.send(event, "找到最近的{}场的Codeforces比赛为：\n".format(min(3, len(cf.list))) + info)
                 return
 
-            await cf.update_contest()
-
             info = ""
             for i in range(min(3, len(cf.list))):
                 info += cf.list[i]['contest_info'] + '\n'
@@ -376,14 +374,14 @@ if __name__ == '__main__':
         ])
         for friend in Friends:
             try:
-                await asyncio.sleep(0.2)  # 减缓发送速度，降低疯狂的可能性
+                await asyncio.sleep(30)  # 减缓发送速度，降低疯狂的可能性
                 await bot.send_friend_message(friend, message_chain)  # 发送个人
             except:
                 print("不存在qq号为 {} 的好友".format(friend))
 
         for group in Groups:
             try:
-                await asyncio.sleep(0.2)
+                await asyncio.sleep(30)
                 await bot.send_group_message(group, message_chain)  # 发送群组
             except:
                 print("不存在群号为 {} 的群组".format(group))
@@ -398,14 +396,14 @@ if __name__ == '__main__':
         ])
         for friend in Friends:
             try:
-                await asyncio.sleep(0.2)
+                await asyncio.sleep(30)
                 await bot.send_friend_message(friend, message_chain)  # 发送个人
             except:
                 print("不存在qq号为 {} 的好友".format(friend))
 
         for group in Groups:
             try:
-                await asyncio.sleep(0.2)
+                await asyncio.sleep(30)
                 await bot.send_group_message(group, message_chain)  # 发送群组
             except:
                 print("不存在群号为 {} 的群组".format(group))
@@ -523,7 +521,7 @@ if __name__ == '__main__':
         ])
         for group in GROUPS:
             try:
-                await asyncio.sleep(0.2)
+                await asyncio.sleep(30)
                 await bot.send_group_message(group, message_chain)  # 发送群组
             except:
                 print("不存在群号为 {} 的群组".format(group))
@@ -816,19 +814,21 @@ if __name__ == '__main__':
         # friends = ['1095490883', '942845546', '2442530380', '601621184']
         # groups = ['687601411', '763537993']
 
+        greetings = ['早上好呀！', '大家早上好！', '宝贝们早上好！', 'Good morning！']
+
         if res != '':
             # 发送当日信息
-            msg = "早上好呀！今日的比赛有：\n\n" + res.strip()
+            msg = random.choice(greetings) + "今日的比赛有：\n\n" + res.strip()
             for friend in Friends:
                 try:
-                    await asyncio.sleep(0.2)
+                    await asyncio.sleep(30)
                     await bot.send_friend_message(friend, msg)  # 发送个人
                 except:
                     print("不存在qq号为 {} 的好友".format(friend))
 
             for group in Groups:
                 try:
-                    await asyncio.sleep(0.2)
+                    await asyncio.sleep(30)
                     await bot.send_group_message(group, msg)  # 发送群组
                 except:
                     print("不存在群号为 {} 的群组".format(group))
