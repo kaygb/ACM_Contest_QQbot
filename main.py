@@ -818,18 +818,18 @@ if __name__ == '__main__':
 
         if res != '':
             # 发送当日信息
-            msg = random.choice(greetings) + "今日的比赛有：\n\n" + res.strip()
+            msg = "今日的比赛有：\n\n" + res.strip()
             for friend in Friends:
                 try:
                     await asyncio.sleep(30)
-                    await bot.send_friend_message(friend, msg)  # 发送个人
+                    await bot.send_friend_message(friend, random.choice(greetings) + msg)  # 发送个人
                 except:
                     print("不存在qq号为 {} 的好友".format(friend))
 
             for group in Groups:
                 try:
                     await asyncio.sleep(30)
-                    await bot.send_group_message(group, msg)  # 发送群组
+                    await bot.send_group_message(group, random.choice(greetings) + msg)  # 发送群组
                 except:
                     print("不存在群号为 {} 的群组".format(group))
 
